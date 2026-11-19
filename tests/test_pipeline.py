@@ -461,3 +461,24 @@ def test_owner_test_briefing_and_push(client, monkeypatch):
     pushed = []
     client.api.pusher.send = lambda sub, payload: pushed.append(sub["endpoint"]) or True
     assert client.post("/api/admin/test-push", headers=H).json() == {"devices": 1, "delivered_to_push_service": 1}
+
+
+def test_health_explains_feeds_whose_items_have_no_readable_date(monkeypatch):
+    """An item without a readable date is dropped (never guessed), and the report says what the feed sent."""
+    import httpx
+    from newsintel.ingestion import RSSAdapter
+    from newsintel import ingestion
+    xml = (b'<?xml version="1.0"?><rss version="2.0"><channel><title>T</title>'
+           b'<item><title>Press release one</title><link>https://www.rbi.org.in/x?prid=1</link>'
+           b'<pubDate>not-a-date</pubDate></item>'
+           b'<item><title>Press release two</title><link>https://www.rbi.org.in/x?prid=2</link></item>'
+           b'</channel></rss>')
+    src = ingestion.registry().get("rbi")
+    monkeypatch.setattr(ingestion, "registry", lambda: type("R", (), {"feeds": lambda self: [(src, "https://www.rbi.org.in/f.xml")]})())
+    monkeypatch.setattr(httpx, "get", lambda *a, **k: httpx.Response(200, content=xml, request=httpx.Request("GET", a[0])))
+    rss = RSSAdapter()
+    assert list(rss.fetch()) == []
+    rep = rss.report[0]
+    assert rep["items"] == 2 and rep["dated_items"] == 0
+    assert rep["undated_sample"]["raw_dates"]["published"] == "not-a-date"
+    assert {"title", "link"} <= set(rep["undated_sample"]["fields"])

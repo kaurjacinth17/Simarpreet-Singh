@@ -86,7 +86,14 @@ class RSSAdapter:
                     precision = "minute"
                     published = datetime(*ts[:6], tzinfo=timezone.utc)
                 if published is None:
-                    continue  # Stage 1 requires a date; drop rather than guess
+                    # Stage 1 requires a date; drop rather than guess. Keep a sample of what the feed
+                    # did send, so /api/health shows why (e.g. a date format feedparser can't read).
+                    if "undated_sample" not in entry:
+                        raw = {k: str(e.get(k))[:80] for k in ("published", "updated", "date", "dc_date", "created")
+                               if e.get(k)}
+                        entry["undated_sample"] = {"title": e.get("title", "")[:80], "raw_dates": raw,
+                                                   "fields": sorted(k for k in e.keys() if not k.endswith("_detail"))[:20]}
+                    continue
                 entry["dated_items"] += 1
                 yield Article(
                     id=hashlib.sha1(url.encode()).hexdigest()[:12],
