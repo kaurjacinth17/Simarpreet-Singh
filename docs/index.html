@@ -359,7 +359,7 @@ body.desk main { overflow: hidden; }
 .dhl { font: 600 clamp(28px, 2.6vw, 38px)/1.12 var(--display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
 .dread .sum { font-size: 18px; line-height: 1.6; }
 .dread .said .what { font-size: 17px; line-height: 1.6; }
-.dwhy h4, .dback .bsec h4 { margin: 0 0 4px; }
+.dback .bsec h4 { margin: 0 0 4px; }
 .dactions { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0 4px; }
 .dactions .dbtn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--sheet); font: 500 14px/1 var(--body); color: var(--ink); text-decoration: none; }
 .dactions .dbtn:hover { border-color: var(--ink); }
@@ -687,7 +687,7 @@ function deskReaderHTML(r) {
   return '<div class="dread-in"><div class="kicker"><span class="idx">' + readTime(s) + '</span>' + labelHTML(s) + '</div>' +
     (cat ? '<div class="cat">' + esc(cat) + '</div>' : "") + '<h1 class="dhl">' + esc(s.headline) + '</h1>' +
     (s.limited ? saidHTML(s) + '<div class="limited"><b>Limited summary.</b> ' + esc(s.limited_reason) + '</div>'
-               : '<p class="sum">' + esc(s.summary) + '</p>' + (s.why ? '<div class="dwhy bsec"><h4>Why it matters</h4><p>' + esc(s.why) + '</p></div>' : "")) +
+               : '<p class="sum">' + esc(s.summary) + '</p>') +   /* "Why it matters" follows "What happened" in the explainer below */
     '<div class="dactions">' +
       '<button class="dbtn' + (saved ? " on" : "") + '" data-c="save" aria-pressed="' + saved + '">' + (saved ? I.saved : I.save) + '<span>' + (saved ? "Saved" : "Save") + '</span></button>' +
       '<button class="dbtn" data-c="share">' + I.share + '<span>Share</span></button>' +
