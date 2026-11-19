@@ -48,7 +48,7 @@ NOT yet done:
    one is verified.
    HT, ET, Business Standard, SEBI, PIB ministries still to add and verify.
 2. Claude summarisation ready (anthropic SDK, effort low, daily cap NEWSINTEL_DAILY_SUMMARY_LIMIT=400, usage + est.
-   cost on /api/health) but never run live: needs ANTHROPIC_API_KEY on Railway. Owner leans to NEWSINTEL_MODEL=claude-haiku-5-5 for cost.
+   cost on /api/health) but never run live: needs ANTHROPIC_API_KEY on Railway. Model is the owner's choice (NEWSINTEL_MODEL).
 3. Not deployed yet; push and email have only been tested against local stand-ins, not real devices or inboxes.
 4. Reuters/AP/FT/Bloomberg need licences.
 
