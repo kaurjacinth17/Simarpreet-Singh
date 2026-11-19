@@ -333,6 +333,46 @@ textarea { width: 100%; min-height: 70px; border: 1px solid var(--rule); border-
 .snapnote { font: 400 10.5px/1.35 var(--mono); color: var(--muted); padding: 6px 16px; border-bottom: 1px solid var(--rule); background: var(--paper); }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 @media (max-width: 380px) { .hl { font-size: 24px; } .act span { display: none; } }
+/* ---------- Laptop layout: story list on the left, the open story in full on the right ---------- */
+body.desk .app { max-width: 1320px; border: 0; }
+body.desk .mast { display: flex; align-items: center; gap: 28px; padding: 10px 28px; }
+body.desk .mast-row { display: contents; }
+body.desk .brand-wrap { order: 0; flex: none; }
+body.desk .tabs { order: 1; flex: 1; gap: 6px; }
+body.desk .tab { padding: 14px 10px 13px; font-size: 15px; }
+body.desk .catch, body.desk .mast-row .icon-btn { order: 2; }
+body.desk #viewBtn { display: none; }
+body.desk main { overflow: hidden; }
+.dwrap { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); flex: 1; min-height: 0; }
+.dlist { position: relative; overflow-y: auto; border-right: 1px solid var(--rule); background: var(--sheet); padding: 6px 0 24px; }
+.dlist-head { padding: 12px 20px 8px; font: 500 11px/1.4 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.ditem { display: grid; gap: 4px; width: 100%; text-align: left; padding: 13px 20px 14px; border-bottom: 1px solid var(--rule); border-left: 3px solid transparent; }
+.ditem:hover { background: var(--paper); }
+.ditem.on { background: var(--paper); border-left-color: var(--accent); }
+.ditem.seen:not(.on) .dh { color: var(--muted); }
+.ditem .dmeta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font: 500 10.5px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.ditem .dh { font: 600 16.5px/1.28 var(--display); color: var(--ink); text-wrap: balance; }
+.ditem .dsub { font-size: 12.5px; color: var(--muted); }
+.dread { overflow-y: auto; padding: 34px clamp(24px, 5vw, 72px) 64px; background: var(--paper); }
+.dread-in { max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
+.dread .kicker { display: flex; gap: 10px; align-items: center; }
+.dhl { font: 600 clamp(28px, 2.6vw, 38px)/1.12 var(--display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+.dread .sum { font-size: 18px; line-height: 1.6; }
+.dread .said .what { font-size: 17px; line-height: 1.6; }
+.dwhy h4, .dback .bsec h4 { margin: 0 0 4px; }
+.dactions { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0 4px; }
+.dactions .dbtn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--sheet); font: 500 14px/1 var(--body); color: var(--ink); text-decoration: none; }
+.dactions .dbtn:hover { border-color: var(--ink); }
+.dactions .dbtn.on { border-color: var(--accent); color: var(--accent); }
+.dactions .dbtn svg { width: 16px; height: 16px; }
+.dactions .dbtn.no { color: var(--alert); }
+.dkeys { font: 400 11.5px/1.4 var(--mono); color: var(--muted); }
+.dback { border-top: 1px solid var(--rule); padding-top: 10px; }
+.dback > .kicker, .dback > .bh { display: none; }
+.dempty { display: grid; place-items: center; height: 100%; color: var(--muted); padding: 40px; text-align: center; }
+body.desk .sheet { left: auto; top: 0; width: min(520px, 100%); max-height: none; border-radius: 0; border-left: 1px solid var(--rule); }
+body.desk .sheet:not(.open) { transform: translateX(105%); }
+body.desk .stories { left: 50%; right: auto; width: 440px; transform: translateX(-50%); box-shadow: 0 0 0 100vmax rgb(8 10 14 / .66); }
 </style>
 </head>
 <body>
@@ -574,7 +614,7 @@ function saidItems(s) {
 function saidHTML(s) {
   const items = saidItems(s), more = s.sources.length - items.length;
   return '<ul class="said">' + items.map(a => '<li><span class="who">' + esc(a.publisher) + '</span><span class="what">' + esc(a.description || a.title) + '</span></li>').join("") + '</ul>' +
-    (more > 0 ? '<div class="saidmore">+ ' + more + ' more report' + (more > 1 ? "s" : "") + ' · flip for all sources</div>' : "");
+    (more > 0 ? '<div class="saidmore">+ ' + more + ' more report' + (more > 1 ? "s" : "") + (isDesk() ? " · all sources are listed below" : " · flip for all sources") + '</div>' : "");
 }
 /* Reading time for one story's card: headline plus the text on its front. */
 function readTime(s) {
@@ -599,7 +639,7 @@ function backHTML(r) {
     '</span></span><span class="t">' + esc(when(a.published, a.precision)) + '</span><span class="h">' + esc(a.title) + ' (not used as a source of facts)</span></a></li>').join("") + '</ul></div>';
   return '<div class="kicker"><span class="lab lab-major">Explained</span><span class="hint" style="margin-left:auto">' + IC.flip.replace('<svg', '<svg width="13" height="13"') + ' Tap to flip back</span></div>' +
     '<h3 class="bh">' + esc(s.headline) + '</h3>' +
-    sec("What happened", e.what || s.summary) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
+    (s.limited && !e.what ? "" : sec("What happened", e.what || s.summary)) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
     sec("Who is affected, and how", e.who) + sec("What could happen next", e.next, "Scheduled events and reported plans only. We do not make predictions.") +
     claims + tl + srcs;
 }
@@ -628,7 +668,69 @@ function renderList(rows) {
   document.getElementById("toDeck").onclick = () => { listMode = false; render(); };
   const cf = document.getElementById("clearFilter"); if (cf) cf.onclick = () => { filter = null; render(); };
 }
+/* Laptops (1024 px and wider) get a reading layout instead of the swipe deck. Same stories, same deck state:
+   deck.i is the open story, so Back, new-story inserts and shared links behave the same on both. */
+const DESK_MQ = matchMedia("(min-width: 1024px)");
+const isDesk = () => DESK_MQ.matches && !listMode;
+DESK_MQ.addEventListener("change", () => { document.body.classList.toggle("desk", DESK_MQ.matches); if (B) render(); });
+document.body.classList.toggle("desk", DESK_MQ.matches);
+function deskItemHTML(r, k, on) {
+  const s = r.s, read = (P.read || []).includes(s.id), cat = s.category || "";
+  const pubs = [...new Set(s.sources.map(a => a.publisher))];
+  return '<button class="ditem' + (on ? " on" : "") + (read ? " seen" : "") + '" data-pick="' + k + '"' + (on ? ' aria-current="true"' : "") + '>' +
+    '<span class="dmeta">' + labelHTML(s) + (cat ? '<span>' + esc(cat) + '</span>' : "") + '</span>' +
+    '<span class="dh">' + esc(s.headline) + '</span>' +
+    '<span class="dsub">' + esc(readTime(s)) + ' · ' + esc(pubs.slice(0, 2).join(", ") + (pubs.length > 2 ? " +" + (pubs.length - 2) : "")) + '</span></button>';
+}
+function deskReaderHTML(r) {
+  const s = r.s, saved = P.saved.includes(s.id), cat = [s.category, s.subcategory].filter(Boolean).join(" · ");
+  return '<div class="dread-in"><div class="kicker"><span class="idx">' + readTime(s) + '</span>' + labelHTML(s) + '</div>' +
+    (cat ? '<div class="cat">' + esc(cat) + '</div>' : "") + '<h1 class="dhl">' + esc(s.headline) + '</h1>' +
+    (s.limited ? saidHTML(s) + '<div class="limited"><b>Limited summary.</b> ' + esc(s.limited_reason) + '</div>'
+               : '<p class="sum">' + esc(s.summary) + '</p>' + (s.why ? '<div class="dwhy bsec"><h4>Why it matters</h4><p>' + esc(s.why) + '</p></div>' : "")) +
+    '<div class="dactions">' +
+      '<button class="dbtn' + (saved ? " on" : "") + '" data-c="save" aria-pressed="' + saved + '">' + (saved ? I.saved : I.save) + '<span>' + (saved ? "Saved" : "Save") + '</span></button>' +
+      '<button class="dbtn" data-c="share">' + I.share + '<span>Share</span></button>' +
+      '<a class="dbtn" href="' + esc(s.sources[0].url) + '" target="_blank" rel="noopener">' + I.out + '<span>Read at ' + esc(s.sources[0].publisher) + '</span></a>' +
+      '<button class="dbtn no" data-c="no"><span>Not for me</span></button>' +
+      '<button class="dbtn" data-c="more" aria-label="Why am I seeing this, feedback and more">' + I.more + '<span>More</span></button>' +
+    '</div><div class="dkeys">↑ ↓ move between stories · S save · X not for me</div>' +
+    '<div class="dback">' + backHTML(r) + '</div></div>';
+}
+function drawDesk() {
+  const rows = deck.rows, n = rows.length;
+  const oldList = view.querySelector(".dlist"), listTop = oldList ? oldList.scrollTop : 0;
+  if (deck.i >= n) deck.i = Math.max(0, n - 1);
+  const head = filter ? '<div class="filterbar"><span>From <b>' + esc(filter) + '</b></span><button id="clearFilter">Back to feed</button></div>' : "";
+  if (!n) { view.innerHTML = head + '<div class="dempty"><div><b>Nothing here yet.</b><br>' + (tab === "saved" ? "Save a story and it will wait for you here." : "Try the All tab.") + '</div></div>'; bindFilterBack(); return; }
+  const r = rows[deck.i];
+  P.read = [...new Set((P.read || []).concat(r.s.id))]; persist();
+  view.innerHTML = head + '<div class="dwrap"><nav class="dlist" aria-label="Stories"><div class="dlist-head">' + n + ' stor' + (n === 1 ? "y" : "ies") + '</div>' +
+    rows.map((row, k) => deskItemHTML(row, k, k === deck.i)).join("") + '</nav>' +
+    '<article class="dread" id="dread" tabindex="-1" aria-live="polite">' + deskReaderHTML(r) + '</article></div>';
+  const list = view.querySelector(".dlist"); list.scrollTop = listTop;
+  const on = list.querySelector(".ditem.on");
+  if (on) { if (on.offsetTop < list.scrollTop) list.scrollTop = on.offsetTop - 40;
+            else if (on.offsetTop + on.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = on.offsetTop + on.offsetHeight - list.clientHeight + 8; }
+  list.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => deskOpen(+b.dataset.pick));
+  bindFilterBack();
+}
+function bindFilterBack() { const cf = document.getElementById("clearFilter"); if (cf) cf.onclick = () => { filter = null; render(); }; }
+function deskOpen(k) {
+  if (k < 0 || k >= deck.rows.length || k === deck.i) return;
+  deck.history.push({ i: deck.i, ev: null }); deck.i = k; drawDesk();
+  const rd = document.getElementById("dread"); if (rd) { rd.scrollTop = 0; rd.focus({ preventScroll: true }); }
+}
+function deskNotForMe() {
+  const r = deck.rows[deck.i]; if (!r) return;
+  const ev = { id: r.s.id, kind: "not_relevant", topics: r.s.topics, at: Date.now() }; P.feedback.push(ev); persist();
+  api(U("/feedback"), { method: "POST", body: JSON.stringify({ story_id: r.s.id, kind: "not_relevant" }) });
+  deck.history.push({ i: deck.i, ev });
+  if (deck.i < deck.rows.length - 1) deck.i++;
+  drawDesk(); toast("Fewer stories like this, gradually", () => undo());
+}
 function drawDeck() {
+  if (isDesk()) return drawDesk();
   const rows = deck.rows, i = deck.i, n = rows.length;
   const left = rows.slice(i);
   let html = (filter ? '<div class="filterbar"><span>From <b>' + esc(filter) + '</b></span><button id="clearFilter">Back to feed</button></div>' : "") +
@@ -947,7 +1049,7 @@ async function enablePush() {
 
 /* ---------- coach marks (first visit) ---------- */
 function coach() {
-  if (P.coached) return;
+  if (P.coached || isDesk()) return;
   const el = document.createElement("div"); el.className = "coach";
   el.innerHTML = '<div><h3>Your briefing is a deck</h3><div class="coach-grid">' +
     '<div><b>→</b>Swipe right: got it, next</div><div><b>←</b>Swipe left: not for me</div>' +
@@ -993,7 +1095,7 @@ function explain(s) {
     return '<li class="' + (future ? "future" : "") + '"><time>' + esc(when(t.at + "T06:00:00Z", "day")) + (future ? " · scheduled" : "") + '</time>' + esc(t.text) + (t.source ? ' <span class="src">— ' + esc(t.source) + '</span>' : "") + '</li>';
   }).join("") + '</ol></div>' : "";
   openSheet(s.headline,
-    sec("What happened", e.what || s.summary) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
+    (s.limited && !e.what ? "" : sec("What happened", e.what || s.summary)) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
     sec("Who is affected", e.who) + sec("What could happen next", e.next, "Scheduled events and reported plans only. We do not make predictions.") +
     claims + tl +
     '<div class="sec"><h4>How this summary was made</h4><p class="note" style="margin:0">Written from ' + s.sources.length + ' reports by ' + s.independent_sources +
@@ -1204,6 +1306,7 @@ view.addEventListener("click", e => {
     if (c.dataset.c === "back") return goBack();
     if (c.dataset.c === "share") return share(r.s);
     if (c.dataset.c === "more") return more(r);
+    if (c.dataset.c === "no") return deskNotForMe();
     if (c.dataset.c === "save") {
       const on = !P.saved.includes(r.s.id);
       P.saved = on ? P.saved.concat(r.s.id) : P.saved.filter(x => x !== r.s.id); persist();
@@ -1232,6 +1335,14 @@ view.addEventListener("click", e => {
 document.addEventListener("keydown", e => {
   if (sheet.classList.contains("open") || document.querySelector(".stories") || listMode) return;
   if (e.target.closest && e.target.closest("input,textarea")) return;
+  if (isDesk() && view.querySelector(".dwrap")) {
+    const k = e.key.toLowerCase();
+    if (k === "arrowdown" || k === "j") { e.preventDefault(); deskOpen(deck.i + 1); }
+    else if (k === "arrowup" || k === "k") { e.preventDefault(); deskOpen(deck.i - 1); }
+    else if (k === "s") { const b = view.querySelector('[data-c="save"]'); if (b) b.click(); }
+    else if (k === "x") deskNotForMe();
+    return;
+  }
   const top = view.querySelector('.card[data-depth="0"]');
   if (e.key === "ArrowRight" && top) { e.preventDefault(); swipe("yes"); }
   else if (e.key === "ArrowLeft" && top) { e.preventDefault(); swipe("no"); }
