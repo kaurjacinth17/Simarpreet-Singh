@@ -107,6 +107,7 @@ class ClaudeSummarizer:
         self.key = os.environ.get("ANTHROPIC_API_KEY")
         self.model = model or os.environ.get("NEWSINTEL_MODEL", "claude-sonnet-5-5")
         self.store = store
+        self.daily_limit = int(os.environ.get("NEWSINTEL_DAILY_SUMMARY_LIMIT", "400"))   # hard cap on paid calls per day
 
     def _recently_failed(self, story: Story) -> bool:
         if not self.store:
@@ -125,26 +126,81 @@ class ClaudeSummarizer:
     def summarize(self, story: Story) -> Summary | None:
         if not self.key or self._recently_failed(story):
             return None
+        if usage_today(self.store)["calls"] >= self.daily_limit:
+            story.signals["summary_skipped"] = f"daily limit of {self.daily_limit} AI summaries reached"
+            return None
         data = self._call(story)
         if self.store:
             self.store.put_summary(cluster_key(story), data)
         return _summary_from_dict(data, "claude")
 
-    def _call(self, story: Story) -> dict:
-        import httpx
+    def _client(self):
+        import anthropic
+        return anthropic.Anthropic(api_key=self.key, timeout=90.0, max_retries=2)
 
+    def _call(self, story: Story) -> dict:
         sources = "\n\n".join(
             f"[{i+1}] {a.publisher} | {a.content_type} | {a.published.date()} | {a.url}\n{a.title}\n{a.extract}"
             for i, a in enumerate(story.articles))
         prompt = PROMPT.replace("{categories}", ", ".join(settings()["categories"])).replace("{sources}", sources)
-        resp = httpx.post(
-            "https://api.anthropic.com/v1/messages", timeout=60,
-            headers={"x-api-key": self.key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": self.model, "max_tokens": 1500, "messages": [{"role": "user", "content": prompt}]},
-        )
-        resp.raise_for_status()
-        text = "".join(b.get("text", "") for b in resp.json()["content"])
+        params = dict(model=self.model, max_tokens=4000,
+                      output_config={"effort": "low"},   # summarising needs little reasoning; keeps cost down
+                      messages=[{"role": "user", "content": prompt}])
+        client = self._client()
+        _record_call(self.store)                           # counted before sending, so a failure still counts
+        if self.model in _FALLBACK_MODELS:                 # if this model declines, the API retries on a fallback
+            resp = client.beta.messages.create(betas=["server-side-fallback-2026-07-01"], fallbacks="default", **params)
+        else:
+            resp = client.messages.create(**params)
+        _record_tokens(self.store, getattr(resp.usage, "input_tokens", 0) or 0, getattr(resp.usage, "output_tokens", 0) or 0)
+        if resp.stop_reason == "refusal":
+            raise RuntimeError("the model declined to summarise this story")
+        if resp.stop_reason == "max_tokens":
+            raise RuntimeError("the reply was cut off before it finished")
+        text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
         return json.loads(text[text.find("{"): text.rfind("}") + 1])
+
+
+# --- Spend tracking: calls and tokens per UTC day, kept in the database ------------------------
+_FALLBACK_MODELS = {"claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-2", "claude-fable-5-1", "claude-opus-5"}
+# US$ per million input / output tokens (Anthropic list prices, Nov 2026). Used only for the estimate on /api/health.
+PRICES = {"claude-haiku-5-5": (0.10, 0.50), "claude-sonnet-5-5": (2.00, 10.00), "claude-opus-5-5": (4.00, 20.00)}
+_memory_usage: dict = {}
+
+
+def _today() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def usage_today(store=None) -> dict:
+    key = "claude_usage:" + _today()
+    raw = store.get_kv(key) if store else None
+    data = json.loads(raw) if raw else _memory_usage.get(key, {})
+    return {"calls": 0, "input_tokens": 0, "output_tokens": 0, **data}
+
+
+def _save_usage(store, data: dict) -> None:
+    key = "claude_usage:" + _today()
+    if store:
+        store.set_kv(key, json.dumps(data))
+    else:
+        _memory_usage[key] = data
+
+
+def _record_call(store) -> None:
+    u = usage_today(store); u["calls"] += 1; _save_usage(store, u)
+
+
+def _record_tokens(store, inp: int, out: int) -> None:
+    u = usage_today(store); u["input_tokens"] += inp; u["output_tokens"] += out; _save_usage(store, u)
+
+
+def estimated_cost(usage: dict, model: str) -> float | None:
+    price = PRICES.get(model)
+    if not price:
+        return None
+    return round(usage["input_tokens"] / 1e6 * price[0] + usage["output_tokens"] / 1e6 * price[1], 4)
 
 
 class ExtractiveFallback:

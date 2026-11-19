@@ -4,5 +4,6 @@ uvicorn==0.54.0
 feedparser==6.0.14
 httpx==0.28.1
 pydantic==2.14.3
+anthropic==2.10.0  # Claude summaries (only used when ANTHROPIC_API_KEY is set)
 pywebpush==2.5.0  # Web Push for breaking alerts and briefings
 pytest==9.2.0

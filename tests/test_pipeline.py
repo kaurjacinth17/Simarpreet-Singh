@@ -507,3 +507,68 @@ def test_zone_less_dates_use_the_publishers_own_time_zone(monkeypatch):
     assert [a.published for a in got] == [datetime(2025, 11, 20, 13, 35, tzinfo=timezone.utc)]   # future one dropped
     monkeypatch.undo()
     assert run("bbc", feed("Thu, 20 Nov 2025 19:05:00")) == []   # no recorded zone: never guessed
+
+
+def test_claude_summaries_use_low_effort_track_usage_and_stop_at_daily_cap(result, tmp_path, monkeypatch):
+    """No real API call: a stand-in client records the request and returns a reviewed summary."""
+    import copy as _copy
+    import json as _json
+    from types import SimpleNamespace as NS
+    from newsintel.db import Store
+    from newsintel.summarization import ClaudeSummarizer, estimated_cost, usage_today
+
+    story = _copy.deepcopy(next(s for s in result.stories if not s.rejected and not s.summary.limited))
+    reviewed = next(e for e in _json.loads(REV.read_text())["summaries"] if set(e["match_urls"]) & {a.url for a in story.articles})
+    reply = _json.dumps({k: v for k, v in reviewed.items() if k != "match_urls"})
+    sent = []
+
+    class FakeMessages:
+        def create(self, **kw):
+            sent.append(kw)
+            return NS(stop_reason="end_turn", usage=NS(input_tokens=800, output_tokens=600),
+                      content=[NS(type="thinking", thinking=""), NS(type="text", text=reply)])
+
+    fake = NS(messages=FakeMessages(), beta=NS(messages=FakeMessages()))
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-real")
+    monkeypatch.setenv("NEWSINTEL_MODEL", "claude-haiku-5-5")
+    monkeypatch.setenv("NEWSINTEL_DAILY_SUMMARY_LIMIT", "2")
+    store = Store(str(tmp_path / "c.db"))
+    c = ClaudeSummarizer(store=store)
+    monkeypatch.setattr(c, "_client", lambda: fake)
+
+    s1 = c.summarize(story)
+    assert s1.provider == "claude" and s1.headline == reviewed["headline"]
+    req = sent[0]
+    assert req["model"] == "claude-haiku-5-5" and req["output_config"] == {"effort": "low"} and req["max_tokens"] >= 4000
+    assert "fallbacks" not in req                                  # Haiku has no server-side fallback
+    u = usage_today(store)
+    assert u == {"calls": 1, "input_tokens": 800, "output_tokens": 600}
+    assert estimated_cost(u, "claude-haiku-5-5") == round(800 / 1e6 * 0.10 + 600 / 1e6 * 0.50, 4)
+
+    other = _copy.deepcopy(story); other.articles = other.articles[:1]
+    c.summarize(other)                                             # 2nd call reaches the cap of 2
+    assert c.summarize(story) is None and len(sent) == 2           # 3rd story: no call, free fallback instead
+    assert "daily limit" in story.signals["summary_skipped"]
+
+    sent.clear(); monkeypatch.setenv("NEWSINTEL_DAILY_SUMMARY_LIMIT", "10")
+    c2 = ClaudeSummarizer(model="claude-sonnet-5-5", store=Store(str(tmp_path / "d.db")))
+    monkeypatch.setattr(c2, "_client", lambda: fake)
+    c2.summarize(story)
+    assert sent[0]["fallbacks"] == "default" and sent[0]["betas"] == ["server-side-fallback-2026-07-01"]
+
+
+def test_claude_refusal_or_cut_off_reply_falls_back_to_limited(result, tmp_path, monkeypatch):
+    import copy as _copy
+    from types import SimpleNamespace as NS
+    from newsintel.db import Store
+    from newsintel.summarization import CacheSummarizer, ClaudeSummarizer, summarize
+
+    story = _copy.deepcopy(next(s for s in result.stories if not s.rejected))
+    for reason in ("refusal", "max_tokens"):
+        fake = NS(messages=NS(create=lambda **kw: NS(stop_reason=reason, usage=NS(input_tokens=1, output_tokens=1), content=[])))
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-real")
+        store = Store(str(tmp_path / f"{reason}.db"))
+        c = ClaudeSummarizer(model="claude-haiku-5-5", store=store)
+        monkeypatch.setattr(c, "_client", lambda f=fake: f)
+        out = summarize(_copy.deepcopy(story), [CacheSummarizer(store), c])
+        assert out.limited

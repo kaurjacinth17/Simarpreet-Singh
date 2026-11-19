@@ -21,7 +21,7 @@ brief is summarised in README.md; the full spec is the owner's "Build an AI-Powe
   plus users (prefs/feedback), notify (breaking alerts), digest (scheduled briefings + email), realtime (refresh loop, SSE, push), db, api
 - `web/app.template.html` the whole client (vanilla JS); `scripts/build_snapshot.py` builds web/index.html and dist/
 - `fixtures/` a real 19 Nov 2026 snapshot (51 articles) and reviewed summaries used by tests
-- `tests/` run with `pytest -q` (34 tests). Keep them passing; add tests for new behaviour.
+- `tests/` run with `pytest -q` (36 tests). Keep them passing; add tests for new behaviour.
 
 ## Commands
 - `pip install -r requirements.txt`
@@ -47,7 +47,8 @@ NOT yet done:
    nothing yet. UN News: all-news and regional feed URLs all 404 (19 Nov 2026); feeds emptied until a working
    one is verified.
    HT, ET, Business Standard, SEBI, PIB ministries still to add and verify.
-2. Claude summarisation has never run live (no API key yet).
+2. Claude summarisation ready (anthropic SDK, effort low, daily cap NEWSINTEL_DAILY_SUMMARY_LIMIT=400, usage + est.
+   cost on /api/health) but never run live: needs ANTHROPIC_API_KEY on Railway. Owner leans to NEWSINTEL_MODEL=claude-haiku-5-5 for cost.
 3. Not deployed yet; push and email have only been tested against local stand-ins, not real devices or inboxes.
 4. Reuters/AP/FT/Bloomberg need licences.
 

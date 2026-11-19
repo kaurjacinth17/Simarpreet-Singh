@@ -218,7 +218,17 @@ def health():
             "stats": r.stats if r else None,
             "feeds": _state["feeds"],
             "push_enabled": pusher.enabled, "email_enabled": mailer.enabled,
-            "claude_summaries": bool(os.environ.get("ANTHROPIC_API_KEY"))}
+            "claude_summaries": bool(os.environ.get("ANTHROPIC_API_KEY")),
+            "claude": _claude_status()}
+
+
+def _claude_status() -> dict:
+    """AI summaries: on or off, which model, today's calls and an estimated cost. Never shows the key."""
+    from ..summarization import ClaudeSummarizer, estimated_cost, usage_today
+    c = ClaudeSummarizer(store=store)
+    today = usage_today(store)
+    return {"on": bool(c.key), "model": c.model, "daily_limit": c.daily_limit,
+            "today_utc": {**today, "estimated_cost_usd": estimated_cost(today, c.model)}}
 
 
 @app.get("/s/{slug}")
