@@ -45,7 +45,12 @@ def run(articles: list[Article], now: datetime, providers: list) -> Result:
     # Stage 2
     stories = cluster(articles)
     cfg_b = settings()["breaking"]
-    for s in stories:
+    # Most independent newsrooms first, then most trusted source, then newest: when AI summaries are
+    # capped per day, the cap is spent on the stories that matter most. (Display order is set later.)
+    def priority(s: Story):
+        return (-len(s.independent_owners), -max((a.credibility for a in s.articles), default=0),
+                -max(a.published.timestamp() for a in s.articles))
+    for s in sorted(stories, key=priority):
         if s.rejected:
             continue
         s.freshness, s.freshness_label, age_h = signals.freshness(s, now)          # Stage 5

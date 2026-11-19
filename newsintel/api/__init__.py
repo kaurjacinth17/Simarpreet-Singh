@@ -227,7 +227,7 @@ def _claude_status() -> dict:
     from ..summarization import ClaudeSummarizer, estimated_cost, usage_today
     c = ClaudeSummarizer(store=store)
     today = usage_today(store)
-    return {"on": bool(c.key), "model": c.model, "daily_limit": c.daily_limit,
+    return {"on": bool(c.key), "model": c.model, "daily_limit": c.daily_limit, "per_refresh_limit": c.refresh_limit,
             "today_utc": {**today, "estimated_cost_usd": estimated_cost(today, c.model)}}
 
 

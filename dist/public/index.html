@@ -1094,13 +1094,23 @@ function explain(s) {
     const future = new Date(t.at) > refDay;
     return '<li class="' + (future ? "future" : "") + '"><time>' + esc(when(t.at + "T06:00:00Z", "day")) + (future ? " · scheduled" : "") + '</time>' + esc(t.text) + (t.source ? ' <span class="src">— ' + esc(t.source) + '</span>' : "") + '</li>';
   }).join("") + '</ol></div>' : "";
+  const reports = '<ul class="srclist">' + s.sources.map(a =>
+    '<li><a href="' + esc(a.url) + '" target="_blank" rel="noopener"><span class="p">' + esc(a.publisher) + (a.type === "official" ? '<span class="tag">Primary</span>' : "") +
+    '</span><span class="t">' + esc(when(a.published, a.precision)) + '</span><span class="h">' + esc(a.title) + '</span>' +
+    (a.description && a.description !== a.title ? '<span class="d">' + esc(a.description) + '</span>' : "") + '</a></li>').join("") + '</ul>';
+  const how = s.limited
+    ? 'No AI summary for this story yet, so you are reading what each of the ' + s.independent_sources + ' newsroom' + (s.independent_sources > 1 ? "s" : "") +
+      ' wrote, in their own words. Tap a report to read it in full on the publisher\'s site.'
+    : 'Written from ' + s.sources.length + ' reports by ' + s.independent_sources + ' independent newsrooms' +
+      (s.analysis.length ? ", with " + s.analysis.length + " opinion or analysis piece" + (s.analysis.length > 1 ? "s" : "") + " shown separately" : "") +
+      '. Every number in the summary was checked against the sources before publishing.';
   openSheet(s.headline,
-    (s.limited && !e.what ? "" : sec("What happened", e.what || s.summary)) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
-    sec("Who is affected", e.who) + sec("What could happen next", e.next, "Scheduled events and reported plans only. We do not make predictions.") +
-    claims + tl +
-    '<div class="sec"><h4>How this summary was made</h4><p class="note" style="margin:0">Written from ' + s.sources.length + ' reports by ' + s.independent_sources +
-    ' independent newsrooms' + (s.analysis.length ? ", with " + s.analysis.length + " opinion or analysis piece" + (s.analysis.length > 1 ? "s" : "") + " shown separately" : "") +
-    '. Every number in the summary was checked against the sources before publishing.</p></div>');
+    (s.limited
+      ? '<div class="sec"><h4>What the reports say</h4>' + reports + '</div>'
+      : sec("What happened", e.what || s.summary) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
+        sec("Who is affected", e.who) + sec("What could happen next", e.next, "Scheduled events and reported plans only. We do not make predictions.") +
+        claims + tl + '<div class="sec"><h4>Read the original reports</h4>' + reports + '</div>') +
+    '<div class="sec"><h4>How this summary was made</h4><p class="note" style="margin:0">' + how + '</p></div>');
 }
 
 /* ---------- more / feedback sheet ---------- */

@@ -107,7 +107,9 @@ class ClaudeSummarizer:
         self.key = os.environ.get("ANTHROPIC_API_KEY")
         self.model = model or os.environ.get("NEWSINTEL_MODEL", "claude-sonnet-5-5")
         self.store = store
-        self.daily_limit = int(os.environ.get("NEWSINTEL_DAILY_SUMMARY_LIMIT", "400"))   # hard cap on paid calls per day
+        self.daily_limit = int(os.environ.get("NEWSINTEL_DAILY_SUMMARY_LIMIT", "60"))    # hard cap on paid calls per day
+        self.refresh_limit = max(3, self.daily_limit // 6)   # one refresh can't spend the whole day's allowance
+        self.calls_this_refresh = 0
 
     def _recently_failed(self, story: Story) -> bool:
         if not self.store:
@@ -129,6 +131,10 @@ class ClaudeSummarizer:
         if usage_today(self.store)["calls"] >= self.daily_limit:
             story.signals["summary_skipped"] = f"daily limit of {self.daily_limit} AI summaries reached"
             return None
+        if self.calls_this_refresh >= self.refresh_limit:
+            story.signals["summary_skipped"] = "waiting for the next refresh (AI summaries are spread through the day)"
+            return None
+        self.calls_this_refresh += 1
         data = self._call(story)
         if self.store:
             self.store.put_summary(cluster_key(story), data)

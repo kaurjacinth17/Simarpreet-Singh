@@ -572,3 +572,28 @@ def test_claude_refusal_or_cut_off_reply_falls_back_to_limited(result, tmp_path,
         monkeypatch.setattr(c, "_client", lambda f=fake: f)
         out = summarize(_copy.deepcopy(story), [CacheSummarizer(store), c])
         assert out.limited
+
+
+def test_ai_allowance_goes_to_the_biggest_stories_and_is_spread_through_the_day(tmp_path, monkeypatch):
+    from newsintel.db import Store
+    from newsintel.summarization import CacheSummarizer, ClaudeSummarizer
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-real")
+    monkeypatch.setenv("NEWSINTEL_DAILY_SUMMARY_LIMIT", "18")          # -> at most 3 per refresh
+    store = Store(str(tmp_path / "p.db"))
+    called = []
+
+    def fake_call(story):
+        called.append(len(story.independent_owners))
+        raise RuntimeError("stand-in: no real model")                  # card falls back to the free version
+
+    def one_refresh():
+        c = ClaudeSummarizer(store=store)
+        monkeypatch.setattr(c, "_call", fake_call)
+        fx = FixtureAdapter(FIX)
+        return run(list(fx.fetch()), fx.snapshot_time, [CacheSummarizer(store), c])
+
+    res = one_refresh()
+    assert len(called) == 3                                             # one refresh can't use the whole day
+    eligible = sorted((len(s.independent_owners) for s in res.stories if s.summary is not None), reverse=True)
+    assert called == eligible[:3]                                       # the most widely covered stories went first
+    assert all(s.summary.limited for s in res.stories if s.summary is not None)
