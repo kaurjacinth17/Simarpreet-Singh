@@ -154,7 +154,7 @@ class ExtractiveFallback:
         text = " ".join(sentences[:2])
         return Summary(headline=lead.title[:90], summary=text, why_it_matters="", category=lead.category,
                        topics=lead.topics, limited=True, provider="extractive",
-                       limited_reason=f"Automatic summary unavailable; showing {lead.publisher}'s own description.")
+                       limited_reason=f"No AI summary for this story, so you're reading what the publishers wrote themselves.")
 
 
 _NUM = re.compile(r"\d[\d,]*(?:\.\d+)?")

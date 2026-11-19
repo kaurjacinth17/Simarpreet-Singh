@@ -80,8 +80,15 @@ def run(articles: list[Article], now: datetime, providers: list) -> Result:
 # ---------------------------------------------------------------------------
 # Serialisation for the web client
 # ---------------------------------------------------------------------------
+def _short(text: str, limit: int = 320) -> str:
+    """The publisher's own short description, cut at a word boundary (we never store full articles)."""
+    text = (text or "").strip()
+    return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0].rstrip(",;:") + "…"
+
+
 def _article_json(a: Article) -> dict:
     return {"publisher": a.publisher, "source_id": a.source_id, "url": a.url, "title": a.title,
+            "description": _short(a.extract),
             "published": a.published.isoformat(), "precision": a.time_precision, "type": a.content_type,
             "tier": a.tier, "translated": a.title_translated}
 
