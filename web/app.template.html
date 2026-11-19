@@ -331,6 +331,7 @@ textarea { width: 100%; min-height: 70px; border: 1px solid var(--rule); border-
 .toast button { color: var(--accent); font-weight: 600; }
 :root[data-theme="dark"] .toast button, .toast button { filter: none; }
 .snapnote { font: 400 10.5px/1.35 var(--mono); color: var(--muted); padding: 6px 16px; border-bottom: 1px solid var(--rule); background: var(--paper); }
+.snapnote a { color: var(--accent); text-decoration: none; white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 @media (max-width: 380px) { .hl { font-size: 24px; } .act span { display: none; } }
 /* ---------- Laptop layout: story list on the left, the open story in full on the right ---------- */
@@ -1374,7 +1375,16 @@ function masthead() {
   const g = new Date(B.generated_at);
   document.getElementById("dateline").textContent = g.toLocaleDateString("en-IN", Object.assign({ day: "numeric", month: "short" }, IST)) +
     " · " + g.toLocaleTimeString("en-IN", Object.assign({ hour: "2-digit", minute: "2-digit", hour12: false }, IST)) + " IST";
-  if (!API) { const n = document.getElementById("snapnote"); n.hidden = false; n.textContent = "Snapshot of real reports · " + when(B.generated_at) + " · all cards link to sources"; }
+  const n = document.getElementById("snapnote");
+  if (!API) {
+    const onDemo = /\/demo\/?$/.test(location.pathname);
+    n.hidden = false;
+    n.innerHTML = "Sample with full AI summaries · real reports from " + esc(when(B.generated_at)) + " · all cards link to sources" +
+      (onDemo ? ' · <a href="/">See today\'s live news →</a>' : "");
+  } else if (B.stories.length && B.stories.every(s => s.limited)) {
+    n.hidden = false;
+    n.innerHTML = 'Live news · AI summaries are paused in this prototype · <a href="/demo">See a sample with them on →</a>';
+  } else n.hidden = true;
 }
 if (API && "serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
 (async function boot() {

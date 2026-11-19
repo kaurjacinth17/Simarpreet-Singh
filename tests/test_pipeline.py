@@ -597,3 +597,14 @@ def test_ai_allowance_goes_to_the_biggest_stories_and_is_spread_through_the_day(
     eligible = sorted((len(s.independent_owners) for s in res.stories if s.summary is not None), reverse=True)
     assert called == eligible[:3]                                       # the most widely covered stories went first
     assert all(s.summary.limited for s in res.stories if s.summary is not None)
+
+
+def test_demo_page_shows_the_ai_written_sample(client):
+    import json as _json
+    import re
+    r = client.get("/demo")
+    assert r.status_code == 200
+    snap = _json.loads(re.search(r'<script id="snapshot" type="application/json">(.*?)</script>', r.text, re.S).group(1))
+    full = [s for s in snap["stories"] if not s["limited"]]
+    assert len(full) >= 10 and all(s["why"] and s["explainer"].get("what") for s in full)   # AI-written explainers
+    assert all(a["url"].startswith("https://") for s in snap["stories"] for a in s["sources"])

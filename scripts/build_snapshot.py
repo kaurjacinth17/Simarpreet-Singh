@@ -39,4 +39,17 @@ embedded = json.dumps(bundle, ensure_ascii=False, separators=(",", ":"), default
 public_dir = ROOT / "dist/public"
 public_dir.mkdir(parents=True, exist_ok=True)
 (public_dir / "index.html").write_text(template.replace(marker, embedded).replace("/*__PUBLIC_URL__*/", ""))
-print(json.dumps(result.stats), "->", ROOT / "dist/sift-snapshot.html")
+# Sample with full AI summaries, served by the live app at /demo
+(ROOT / "web/demo.html").write_text(template.replace(marker, embedded).replace("/*__PUBLIC_URL__*/", ""))
+# Same sample for GitHub Pages (Settings -> Pages -> main /docs), which serves from a sub-path:
+# icon links become relative and the install manifest is left out.
+import shutil  # noqa: E402
+docs = ROOT / "docs"
+(docs / "icons").mkdir(parents=True, exist_ok=True)
+page = template.replace(marker, embedded).replace("/*__PUBLIC_URL__*/", "")
+page = page.replace('<link rel="manifest" href="/manifest.webmanifest">\n', "").replace('href="/icons/', 'href="icons/')
+(docs / "index.html").write_text(page)
+(docs / ".nojekyll").write_text("")
+for icon in ("icon-192.png", "apple-touch-icon.png"):
+    shutil.copy(ROOT / "web/icons" / icon, docs / "icons" / icon)
+print(json.dumps(result.stats), "->", ROOT / "dist/sift-snapshot.html", "+ web/demo.html + docs/index.html")

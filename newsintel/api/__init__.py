@@ -194,6 +194,12 @@ def index(request: Request):
     return HTMLResponse(_page(request))
 
 
+@app.get("/demo")
+def demo():
+    """A saved sample (real reports from 19 Nov 2026) with full AI summaries, for showing what the AI layer adds."""
+    return FileResponse(WEB / "demo.html")
+
+
 @app.get("/manifest.webmanifest")
 def manifest():
     return FileResponse(WEB / "manifest.webmanifest", media_type="application/manifest+json")

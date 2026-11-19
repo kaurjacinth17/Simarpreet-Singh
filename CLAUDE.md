@@ -21,7 +21,7 @@ brief is summarised in README.md; the full spec is the owner's "Build an AI-Powe
   plus users (prefs/feedback), notify (breaking alerts), digest (scheduled briefings + email), realtime (refresh loop, SSE, push), db, api
 - `web/app.template.html` the whole client (vanilla JS); `scripts/build_snapshot.py` builds web/index.html and dist/
 - `fixtures/` a real 19 Nov 2026 snapshot (51 articles) and reviewed summaries used by tests
-- `tests/` run with `pytest -q` (37 tests). Keep them passing; add tests for new behaviour.
+- `tests/` run with `pytest -q` (38 tests). Keep them passing; add tests for new behaviour.
 
 ## Commands
 - `pip install -r requirements.txt`
@@ -51,6 +51,9 @@ NOT yet done:
    cost on /api/health) but never run live: needs ANTHROPIC_API_KEY on Railway. Model is the owner's choice (NEWSINTEL_MODEL).
 3. Not deployed yet; push and email have only been tested against local stand-ins, not real devices or inboxes.
 4. Reuters/AP/FT/Bloomberg need licences.
+5. No budget for AI right now (owner is showing the prototype to recruiters). /demo and docs/ (GitHub Pages)
+   serve the 19 Nov sample with full reviewed AI summaries, clearly labelled; the live app links to /demo
+   while every live story is limited. Rebuild both with scripts/build_snapshot.py.
 
 ## Working style
 - The owner is not a professional developer: explain choices in plain language, ask before spending money
