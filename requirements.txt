@@ -1,0 +1,8 @@
+# Pinned to the versions tested on 19 Nov 2026, so the server installs exactly what was tested.
+fastapi==0.165.0
+uvicorn==0.54.0
+feedparser==6.0.14
+httpx==0.28.1
+pydantic==2.14.3
+pywebpush==2.5.0  # Web Push for breaking alerts and briefings
+pytest==9.2.0

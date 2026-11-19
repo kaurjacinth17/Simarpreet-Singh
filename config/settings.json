@@ -1,0 +1,35 @@
+{
+  "_doc": "Tunable pipeline settings. Weights must sum to 1.0.",
+  "refresh": {"normal_minutes": 5, "breaking_minutes": 2},
+  "score_weights": {"importance": 0.30, "relevance": 0.25, "credibility": 0.20, "freshness": 0.15, "practical": 0.10},
+  "feed_mix": {"personal": 0.75, "global": 0.25},
+  "feed": {"max_items": 12, "min_total_score": 48, "global_importance_floor": 70, "must_know_importance": 85, "relevance_floor": 35},
+  "freshness": {"half_life_hours": 20, "max_age_hours": 96, "breaking_window_hours": 6, "new_event_hours": 24},
+  "breaking": {"min_importance": 75, "min_credibility": 80, "max_age_hours": 6},
+  "clustering": {"window_hours": 192, "cosine_link": 0.24, "entity_link": 0.30, "cosine_with_entity": 0.20, "entity_topic_link": 0.15, "topic_link": 0.40, "combined_floor": 0.20, "merge_coverage": 0.6},
+  "quality": {"min_credibility": 62, "min_importance": 30, "min_words": 12},
+  "summary": {"min_words": 35, "max_words": 65, "retry_failed_hours": 6},
+  "feedback": {"step": 0.08, "max_affinity": 0.35, "half_life_days": 14},
+  "categories": [
+    "Top Stories", "India", "World", "Business & Economy", "Markets & Finance", "Technology & AI", "Startups",
+    "Science", "Health", "Politics & Policy", "Education & Careers", "Climate & Environment", "Sports", "Entertainment"
+  ],
+  "interests": {
+    "Business": ["business", "corporate", "earnings", "startups"],
+    "Finance": ["markets", "central-banks", "oil", "ipo", "rates"],
+    "Artificial Intelligence": ["ai", "semiconductors"],
+    "Technology": ["technology", "semiconductors", "ai"],
+    "Startups": ["startups", "ipo", "venture"],
+    "Politics": ["politics", "courts", "geopolitics", "us"],
+    "Economy": ["economy", "inflation", "central-banks", "rates", "oil", "trade"],
+    "World affairs": ["geopolitics", "world", "conflict", "diplomacy"],
+    "India": ["india", "delhi"],
+    "Science": ["science", "space", "research"],
+    "Healthcare": ["health", "public-health", "drug-regulation"],
+    "Education": ["education", "research", "universities"],
+    "Careers": ["careers", "jobs", "education"],
+    "Climate": ["climate", "pollution", "energy"],
+    "Sports": ["sports"],
+    "Entertainment": ["entertainment"]
+  }
+}

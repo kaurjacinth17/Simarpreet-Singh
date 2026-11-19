@@ -1,0 +1,1793 @@
+{
+ "generated_at": "2026-11-19T06:45:00+00:00",
+ "stats": {
+  "articles_scanned": 51,
+  "articles_rejected": 5,
+  "stories_formed": 19,
+  "duplicates_merged": 27,
+  "stories_rejected": 7,
+  "stories_kept": 12,
+  "rejections_by_stage": {
+   "source": 5,
+   "quality": 4,
+   "freshness": 3
+  }
+ },
+ "weights": {
+  "importance": 0.3,
+  "relevance": 0.25,
+  "credibility": 0.2,
+  "freshness": 0.15,
+  "practical": 0.1
+ },
+ "feed_mix": {
+  "personal": 0.75,
+  "global": 0.25
+ },
+ "feed_settings": {
+  "max_items": 12,
+  "min_total_score": 48,
+  "global_importance_floor": 70,
+  "must_know_importance": 85,
+  "relevance_floor": 35
+ },
+ "interests": {
+  "Business": [
+   "business",
+   "corporate",
+   "earnings",
+   "startups"
+  ],
+  "Finance": [
+   "markets",
+   "central-banks",
+   "oil",
+   "ipo",
+   "rates"
+  ],
+  "Artificial Intelligence": [
+   "ai",
+   "semiconductors"
+  ],
+  "Technology": [
+   "technology",
+   "semiconductors",
+   "ai"
+  ],
+  "Startups": [
+   "startups",
+   "ipo",
+   "venture"
+  ],
+  "Politics": [
+   "politics",
+   "courts",
+   "geopolitics",
+   "us"
+  ],
+  "Economy": [
+   "economy",
+   "inflation",
+   "central-banks",
+   "rates",
+   "oil",
+   "trade"
+  ],
+  "World affairs": [
+   "geopolitics",
+   "world",
+   "conflict",
+   "diplomacy"
+  ],
+  "India": [
+   "india",
+   "delhi"
+  ],
+  "Science": [
+   "science",
+   "space",
+   "research"
+  ],
+  "Healthcare": [
+   "health",
+   "public-health",
+   "drug-regulation"
+  ],
+  "Education": [
+   "education",
+   "research",
+   "universities"
+  ],
+  "Careers": [
+   "careers",
+   "jobs",
+   "education"
+  ],
+  "Climate": [
+   "climate",
+   "pollution",
+   "energy"
+  ],
+  "Sports": [
+   "sports"
+  ],
+  "Entertainment": [
+   "entertainment"
+  ]
+ },
+ "stories": [
+  {
+   "id": "s_177e4a52ce",
+   "headline": "Trump meets Xi and Putin separately in Shenzhen ahead of first three-way talks",
+   "summary": "At the APEC summit in Shenzhen, US President Donald Trump held separate one-on-one meetings with Russia's Vladimir Putin and China's Xi Jinping on Thursday, ahead of an unprecedented three-way meeting. The White House said the agenda includes the Iran war and a possible nuclear arms agreement. US officials have played down chances of a deal.",
+   "why": "Leader-level talks between the US, China and Russia in this format have no precedent. Any movement on the Iran war or Ukraine could shift oil prices and shipping risk, which feed straight into India's import bill and inflation.",
+   "category": "World",
+   "subcategory": "Diplomacy · APEC",
+   "topics": [
+    "conflict",
+    "diplomacy",
+    "geopolitics",
+    "us",
+    "world"
+   ],
+   "regions": [
+    "World",
+    "Asia"
+   ],
+   "status": "developing",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 86.0,
+   "credibility": 98.0,
+   "freshness": 99.7,
+   "practical": 45.0,
+   "label": "Developing",
+   "breaking": true,
+   "freshness_label": "New development",
+   "first_seen": "2026-11-13T12:00:00+00:00",
+   "last_updated": "2026-11-19T06:39:00+00:00",
+   "explainer": {
+    "what": "On the second day of the APEC summit, Trump met Putin after the leaders' plenary session, then began a bilateral meeting with Xi at Kylin Villa, according to Nikkei Asia and Xinhua as cited by CNN. A three-way meeting of the three leaders was scheduled to follow.",
+    "why": "It is the first time the US, Chinese and Russian leaders have met together in this format. The agenda covers the Iran war, the war in Ukraine and nuclear arms, all of which move energy markets and global security.",
+    "before": "China's foreign ministry and the Kremlin confirmed the meeting in advance. Nikkei Asia reports this is Trump and Xi's third summit of the year as they manage a tense rivalry.",
+    "who": "Ukraine, which is not taking part; Gulf states and energy importers exposed to the Iran war; and countries that depend on US–China trade.",
+    "next": "The three-way meeting was due later on Thursday. A senior US official told CNN the talks were an entry point and that no agreement was expected."
+   },
+   "claims": [
+    {
+     "text": "Trump met Putin and Xi separately on the sidelines of APEC",
+     "kind": "confirmed",
+     "source": "Nikkei Asia; CNN citing Xinhua"
+    },
+    {
+     "text": "The White House said Trump plans to discuss the Iran war and a possible three-way agreement on nuclear arms",
+     "kind": "official",
+     "source": "Al Jazeera"
+    },
+    {
+     "text": "A senior US official said Washington does not expect to reach any agreement",
+     "kind": "official",
+     "source": "CNN"
+    },
+    {
+     "text": "What, if anything, the three-way meeting produces",
+     "kind": "uncertain",
+     "source": ""
+    },
+    {
+     "text": "ORF America's Dhruva Jaishankar said Ukraine's absence raises doubts about what the talks can achieve",
+     "kind": "analysis",
+     "source": "ANI"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-13",
+     "text": "China and Russia confirm the Shenzhen trilateral",
+     "source": "CNN",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "Trump arrives in Shenzhen for APEC",
+     "source": "CNBC",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-19",
+     "text": "Trump meets Putin after the plenary session",
+     "source": "Nikkei Asia",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-19",
+     "text": "Trump–Xi bilateral begins at Kylin Villa",
+     "source": "CNN, citing Xinhua",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-19",
+     "text": "Three-way meeting scheduled to follow",
+     "source": "NBC News",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "What did a senior US official say to expect from the three-way meeting?",
+    "options": [
+     "No agreement",
+     "A signed nuclear deal",
+     "A Ukraine ceasefire"
+    ],
+    "answer": 0
+   },
+   "sources": [
+    {
+     "publisher": "Nikkei Asia",
+     "source_id": "nikkei",
+     "url": "https://asia.nikkei.com/politics/international-relations/apec/apec-live-leaders-gather-for-family-photo-in-shenzhen",
+     "title": "APEC live: Trump arrives at resort for meetings with Xi, Putin",
+     "published": "2026-11-19T05:36:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "CNBC",
+     "source_id": "cnbc",
+     "url": "https://www.cnbc.com/2026/11/18/trump-xi-putin-china-apec.html",
+     "title": "Trump arrives in China for historic meeting with Xi, Putin",
+     "published": "2026-11-18T12:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "CNN",
+     "source_id": "cnn",
+     "url": "https://www.cnn.com/2026/11/13/politics/trump-putin-xi-meeting",
+     "title": "Trump to meet with China's Xi and Russia's Putin at historic trilateral sit-down on nuclear non-proliferation",
+     "published": "2026-11-13T12:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "CNN",
+     "source_id": "cnn",
+     "url": "https://edition.cnn.com/2026/11/17/politics/live-news/trump-visit-china-philippines",
+     "title": "Trump meeting Xi, Putin in China for high-stakes talks: APEC summit latest",
+     "published": "2026-11-19T05:30:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "NBC News",
+     "source_id": "nbc",
+     "url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-xi-putin-china-apec-congress-2026-live-updates-rcna609888",
+     "title": "Live updates: Trump sits down with Putin and Xi separately before historic three-way talks",
+     "published": "2026-11-19T06:39:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "Al Jazeera",
+     "source_id": "al_jazeera",
+     "url": "https://www.aljazeera.com/news/2026/11/19/what-do-trump-putin-and-xi-want-from-their-shenzhen-meeting",
+     "title": "What do Trump, Putin and Xi want from their Shenzhen meeting?",
+     "published": "2026-11-19T03:00:00+00:00",
+     "precision": "day",
+     "type": "explainer",
+     "tier": 2,
+     "translated": false
+    }
+   ],
+   "analysis": [
+    {
+     "publisher": "Atlantic Council",
+     "source_id": "atlantic_council",
+     "url": "https://www.atlanticcouncil.org/dispatches/what-trump-putin-and-xi-want-from-their-meeting-in-shenzhen/",
+     "title": "What Trump, Putin, and Xi want from their meeting in Shenzhen",
+     "published": "2026-11-18T12:00:00+00:00",
+     "precision": "day",
+     "type": "opinion",
+     "tier": 3,
+     "translated": false
+    },
+    {
+     "publisher": "ANI",
+     "source_id": "ani",
+     "url": "https://www.tribuneindia.com/news/apec-summit/ukrainians-are-not-in-room-dhruva-jaishankar-casts-doubt-on-outcomes-of-trump-xi-putin-trilateral-talks-in-shenzhen",
+     "title": "\"Ukrainians are not in room\": Dhruva Jaishankar casts doubt on outcomes of Trump-Xi-Putin trilateral talks in Shenzhen",
+     "published": "2026-11-19T04:00:00+00:00",
+     "precision": "day",
+     "type": "analysis",
+     "tier": 2,
+     "translated": false
+    }
+   ],
+   "independent_sources": 5,
+   "signals": {
+    "credibility": {
+     "best_source": "Nikkei Asia",
+     "independent_sources": 5,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 86,
+     "model": 86,
+     "reasons": [
+      "Leader-level diplomacy between major powers (+70)",
+      "Unprecedented development (+4)",
+      "Covered by 5 independent newsrooms (+12)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_039829c9f8",
+   "headline": "Tanker attacked in Strait of Hormuz as US–Iran hostilities build",
+   "summary": "A tanker was attacked in the Strait of Hormuz on Wednesday, UK maritime agency UKMTO said, and an Indian minister said three Indian sailors were safe after a separate tanker attack in the Gulf. A US military official said American warplanes struck an Iranian missile site, and a US advisory showed tighter curbs on Iranian oil transfers at sea.",
+   "why": "Attacks on Gulf shipping keep oil-supply risk high, which feeds into fuel prices and inflation in import-dependent economies such as India. Indian seafarers are among those directly exposed.",
+   "category": "World",
+   "subcategory": "Middle East · Iran war",
+   "topics": [
+    "conflict",
+    "energy",
+    "gulf",
+    "india",
+    "us",
+    "world"
+   ],
+   "regions": [
+    "World",
+    "Middle East",
+    "India"
+   ],
+   "status": "developing",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 84.0,
+   "credibility": 95.0,
+   "freshness": 88.2,
+   "practical": 55.0,
+   "label": "Developing",
+   "breaking": true,
+   "freshness_label": "New",
+   "first_seen": "2026-11-18T07:51:00+00:00",
+   "last_updated": "2026-11-19T03:07:00+00:00",
+   "explainer": {
+    "what": "UKMTO reported a tanker attack in the Strait of Hormuz. Separately, an Indian minister said three Indian crew were safe after another tanker was hit by a projectile. A US official said US warplanes struck an Iranian missile site, and a US advisory showed tighter curbs on ship-to-ship oil transfers.",
+    "why": "Hormuz is a key route for Gulf oil and gas. Each attack raises shipping and insurance risk and keeps a premium in crude prices.",
+    "before": "The war began on 28 February. Gulf News reports that diplomatic efforts to end it remain stalled.",
+    "who": "Ship crews and operators in the Gulf, Gulf states facing Iranian drones and missiles (the UAE condemned attacks on Kuwait and Bahrain), and fuel importers.",
+    "next": "Israel is considering military action against Iran in the coming days, Israel's Channel 12 reported without citing a source. This is unconfirmed."
+   },
+   "claims": [
+    {
+     "text": "A tanker was attacked in the Strait of Hormuz",
+     "kind": "official",
+     "source": "UKMTO via ABC News"
+    },
+    {
+     "text": "Three Indian sailors are safe after a projectile hit another tanker",
+     "kind": "official",
+     "source": "Indian minister via Khaleej Times"
+    },
+    {
+     "text": "American warplanes struck an Iranian missile site",
+     "kind": "reported",
+     "source": "US military official via Khaleej Times"
+    },
+    {
+     "text": "The US tightened curbs on Iranian oil transfers at sea",
+     "kind": "reported",
+     "source": "Advisory seen by Dawn"
+    },
+    {
+     "text": "Trump said Iran was 'looking at gases' and 'biological weapons'; the US Homeland Security chief dismissed a related dirty-bomb report",
+     "kind": "allegation",
+     "source": "ABC News; Dawn"
+    },
+    {
+     "text": "Israel is considering military action against Iran in the coming days",
+     "kind": "uncertain",
+     "source": "Channel 12 via The Times of Israel"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-02-28",
+     "text": "War begins",
+     "source": "Gulf News",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "UAE reports an ADNOC ship attacked; flights to Saudi Arabia suspended",
+     "source": "Gulf News",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "Three Indian sailors safe after tanker attack",
+     "source": "Khaleej Times",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "US tightens blockade with curbs on oil transfers at sea",
+     "source": "Dawn",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "Tanker attacked in the Strait of Hormuz",
+     "source": "UKMTO via ABC News",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "What did an Indian minister say about three Indian sailors?",
+    "options": [
+     "They were detained by Iran",
+     "They are safe",
+     "They are missing"
+    ],
+    "answer": 1
+   },
+   "sources": [
+    {
+     "publisher": "ABC News",
+     "source_id": "abc_news",
+     "url": "https://abcnews.com/International/live-updates/iran-live-updates-tanker-attacked-strait-hormuz-ukmto/?id=138171071",
+     "title": "Iran live updates: Trump says Iran 'looking at gases' and 'biological weapons' amid dirty bomb report",
+     "published": "2026-11-19T03:07:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "The Times of Israel",
+     "source_id": "times_of_israel",
+     "url": "https://www.timesofisrael.com/liveblog-november-18-2026/",
+     "title": "Nov. 18: US reissues security warnings to Americans in Gulf after Iranian strikes",
+     "published": "2026-11-18T15:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "Dawn",
+     "source_id": "dawn",
+     "url": "https://www.dawn.com/live/iran-israel-war",
+     "title": "Live Updates: War returns to Iran with Israel, US strikes",
+     "published": "2026-11-18T16:39:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "Khaleej Times",
+     "source_id": "khaleej_times",
+     "url": "https://www.khaleejtimes.com/world/mena/us-israel-iran-saudi-arabia-yemen-war-live-updates-november-18-2026",
+     "title": "Three Indian sailors safe after attack on oil tanker in Gulf on Nov 18: Minister",
+     "published": "2026-11-18T12:29:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    },
+    {
+     "publisher": "Gulf News",
+     "source_id": "gulf_news",
+     "url": "https://gulfnews.com/uae/usisrael-iran-war-what-uae-residents-need-to-know-today-nov-18-2026-1.500751757",
+     "title": "US/Israel-Iran war: What UAE residents need to know today (Nov. 18, 2026)",
+     "published": "2026-11-18T07:51:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 5,
+   "signals": {
+    "credibility": {
+     "best_source": "ABC News",
+     "independent_sources": 5,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 84,
+     "model": 84,
+     "reasons": [
+      "Armed conflict affecting a major shipping and energy route (+72)",
+      "Covered by 5 independent newsrooms (+12)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_b8785a000c",
+   "headline": "Nvidia revenue doubles to $115.8 billion as board rules out Huang's return",
+   "summary": "Nvidia reported third-quarter revenue of $115.8 billion, up 103% from a year earlier, and forecast about $130 billion for the current quarter. On the earnings call, chairman Harvey Jones said the board does not intend to reinstate Jensen Huang, who resigned as CEO on 12 November and later said he was willing to return.",
+   "why": "Nvidia's results are a bellwether for global spending on AI infrastructure. The leadership vacuum, and congressional questions over chip exports to China, add governance risk at a company central to the AI build-out.",
+   "category": "Technology & AI",
+   "subcategory": "Semiconductors · Earnings",
+   "topics": [
+    "ai",
+    "business",
+    "corporate",
+    "earnings",
+    "markets",
+    "semiconductors",
+    "technology"
+   ],
+   "regions": [
+    "World",
+    "US"
+   ],
+   "status": "confirmed",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 81.2,
+   "credibility": 100.0,
+   "freshness": 32.9,
+   "practical": 40.0,
+   "label": "Major",
+   "breaking": false,
+   "freshness_label": "Earlier this week",
+   "first_seen": "2026-11-12T21:00:00+00:00",
+   "last_updated": "2026-11-17T22:42:00+00:00",
+   "explainer": {
+    "what": "For the quarter ended 25 October, Nvidia's revenue rose 103% to $115.8 billion and Data Center revenue rose 110% to $107.6 billion. It guided to $130 billion, plus or minus 2%, for the next quarter. The board said it will not bring back Huang.",
+    "why": "Nvidia is the leading supplier of AI data-centre chips, so its numbers are read as a gauge of the whole AI investment cycle.",
+    "before": "Huang resigned as president, CEO and director on 12 November. CFO Colette Kress became interim CEO and Harvey C. Jones the board's first chair. On 17 November Huang said he was open to returning.",
+    "who": "Investors, the cloud companies and AI labs that buy Nvidia's chips, and Nvidia's employees.",
+    "next": "Huang has agreed to transcribed interviews with several US House committees on 1 December, Al Jazeera reports."
+   },
+   "claims": [
+    {
+     "text": "Q3 revenue was $115.8 billion, up 103%; Data Center revenue was $107.6 billion",
+     "kind": "confirmed",
+     "source": "NVIDIA results; SEC 8-K"
+    },
+    {
+     "text": "The board does not intend to reinstate Huang as CEO",
+     "kind": "official",
+     "source": "Chairman Harvey C. Jones via TechCrunch"
+    },
+    {
+     "text": "Huang said he was willing to return as CEO",
+     "kind": "official",
+     "source": "Huang statement via Bloomberg"
+    },
+    {
+     "text": "Huang agreed to interviews with House committees on 1 December",
+     "kind": "reported",
+     "source": "Al Jazeera"
+    },
+    {
+     "text": "Reports said one of Huang's relationships allegedly involved a suspected Chinese spy. This has not been established.",
+     "kind": "allegation",
+     "source": "Al Jazeera"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-12",
+     "text": "Huang resigns; Colette Kress named interim CEO",
+     "source": "NVIDIA",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-17",
+     "text": "Huang says he is open to returning",
+     "source": "Bloomberg",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-17",
+     "text": "Q3 results; board says it will not reinstate Huang",
+     "source": "NVIDIA; TechCrunch",
+     "precision": "day"
+    },
+    {
+     "at": "2026-12-01",
+     "text": "Scheduled: Huang's interviews with House committees",
+     "source": "Al Jazeera",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "How much did Nvidia's quarterly revenue grow from a year earlier?",
+    "options": [
+     "48%",
+     "103%",
+     "210%"
+    ],
+    "answer": 1
+   },
+   "sources": [
+    {
+     "publisher": "US SEC filings",
+     "source_id": "sec",
+     "url": "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000088/q3fy27pr.htm",
+     "title": "NVIDIA CORP - Form 8-K - Third Quarter Fiscal 2027 results",
+     "published": "2026-11-17T21:20:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": false
+    },
+    {
+     "publisher": "NVIDIA Newsroom / IR",
+     "source_id": "nvidia_ir",
+     "url": "https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition",
+     "title": "NVIDIA Announces CEO Transition",
+     "published": "2026-11-12T21:00:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": false
+    },
+    {
+     "publisher": "NVIDIA Newsroom / IR",
+     "source_id": "nvidia_ir",
+     "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Third-Quarter-Fiscal-2027/",
+     "title": "NVIDIA Announces Financial Results for Third Quarter Fiscal 2027",
+     "published": "2026-11-17T21:20:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": false
+    },
+    {
+     "publisher": "Bloomberg",
+     "source_id": "bloomberg",
+     "url": "https://bloomberg.com/news/articles/2026-11-17/huang-is-willing-to-return-as-nvidia-ceo-if-board-allows-it",
+     "title": "Nvidia's Jensen Huang Open to Rejoining as CEO Pending Board Decision",
+     "published": "2026-11-17T16:08:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "Al Jazeera",
+     "source_id": "al_jazeera",
+     "url": "https://www.aljazeera.com/economy/2026/11/17/jensen-huang-to-testify-before-us-house-committees-next-month",
+     "title": "Jensen Huang agrees to testify before US House, says can resume CEO role",
+     "published": "2026-11-17T12:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "TechCrunch",
+     "source_id": "techcrunch",
+     "url": "https://techcrunch.com/2026/11/17/nvidia-says-it-doesnt-plan-to-reappoint-jensen-huang-as-ceo/",
+     "title": "Nvidia says it doesn't plan to reappoint Jensen Huang as CEO",
+     "published": "2026-11-17T22:42:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    },
+    {
+     "publisher": "Yahoo Finance",
+     "source_id": "yahoo_finance",
+     "url": "https://finance.yahoo.com/technology/live/nvidia-earnings-live-nvidia-posts-q3-beat-board-says-it-will-not-reinstate-jensen-huang-as-ceo-221428433.html",
+     "title": "Nvidia earnings live: Nvidia posts Q3 beat as revenue rose 103% YOY to $115.8B, board says it will not reinstate Jensen Huang as CEO",
+     "published": "2026-11-17T22:18:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 6,
+   "signals": {
+    "credibility": {
+     "best_source": "US SEC filings",
+     "independent_sources": 6,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 82,
+     "model": 80,
+     "reasons": [
+      "Results of a company central to the AI industry (+60)",
+      "Large sums involved (+6)",
+      "Covered by 6 independent newsrooms (+12)",
+      "Primary/official source (+4)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_589515d674",
+   "headline": "Ebola cases in DR Congo more than double in three months, WHO says",
+   "summary": "The Ebola outbreak in the Democratic Republic of the Congo has more than doubled in three months, to over 11,000 cases and 5,400 deaths across 67 health zones in eight provinces, WHO chief Tedros Adhanom Ghebreyesus said on Tuesday as the agency's emergency committee on the Bundibugyo virus epidemic met for a third time.",
+   "why": "The speed of spread makes this a major regional health emergency; the emergency committee's advice guides the international response, from funding to travel measures.",
+   "category": "Health",
+   "subcategory": "Outbreaks · Ebola",
+   "topics": [
+    "health",
+    "public-health",
+    "world"
+   ],
+   "regions": [
+    "World",
+    "Africa"
+   ],
+   "status": "developing",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 75.2,
+   "credibility": 88.0,
+   "freshness": 27.0,
+   "practical": 30.0,
+   "label": "Significant",
+   "breaking": false,
+   "freshness_label": "Earlier this week",
+   "first_seen": "2026-11-17T17:00:00+00:00",
+   "last_updated": "2026-11-17T17:00:00+00:00",
+   "explainer": {
+    "what": "WHO reports more than 11,000 cases and 5,400 deaths in 67 health zones across eight provinces of DR Congo, double the toll of three months ago.",
+    "why": "Rapid growth over a wide area strains health systems and raises the risk of spread across borders.",
+    "before": "This was the third meeting of WHO's emergency committee on the Bundibugyo virus disease epidemic.",
+    "who": "Communities in eastern and central DR Congo, health workers, and neighbouring countries.",
+    "next": "The committee's recommendations are expected after the meeting. Tedros said children were paying a terrible price."
+   },
+   "claims": [
+    {
+     "text": "Over 11,000 cases and 5,400 deaths in 67 health zones",
+     "kind": "official",
+     "source": "WHO Director-General via UN News"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-17",
+     "text": "Emergency committee meets for the third time",
+     "source": "UN News",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "How many Ebola cases has DR Congo now reported?",
+    "options": [
+     "About 1,100",
+     "Over 11,000",
+     "Over 110,000"
+    ],
+    "answer": 1
+   },
+   "sources": [
+    {
+     "publisher": "UN News",
+     "source_id": "un_news",
+     "url": "https://news.un.org/en/story/2026/11/1168827",
+     "title": "World News in Brief: Ebola cases double in DR Congo, chemical exposure starts before birth, Türk concern over EU-Rwanda transfer plan",
+     "published": "2026-11-17T17:00:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 1,
+   "signals": {
+    "credibility": {
+     "best_source": "UN News",
+     "independent_sources": 1,
+     "corroborated": false
+    },
+    "importance": {
+     "rules": 76,
+     "model": 74,
+     "reasons": [
+      "Public-health emergency or global health policy (+66)",
+      "Affects many people (+6)",
+      "Primary/official source (+4)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_3a261481b7",
+   "headline": "Fed minutes show nearly all officials expect further rate hikes",
+   "summary": "Minutes of the Federal Reserve's 27–28 October meeting show almost all policymakers judged that further rate increases would likely be appropriate in the months ahead to return inflation to the 2% target. The Fed held its benchmark rate in a 3.75%–4% range at that meeting. Officials also discussed AI as a driver of inflation and financial instability.",
+   "why": "Higher US rates tend to strengthen the dollar and can draw foreign money away from emerging markets, a swing factor for Indian equities and the rupee.",
+   "category": "Markets & Finance",
+   "subcategory": "Central banks · US Fed",
+   "topics": [
+    "central-banks",
+    "economy",
+    "inflation",
+    "markets",
+    "rates",
+    "us"
+   ],
+   "regions": [
+    "US",
+    "World"
+   ],
+   "status": "confirmed",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 70.2,
+   "credibility": 96.0,
+   "freshness": 66.7,
+   "practical": 60.0,
+   "label": "Significant",
+   "breaking": false,
+   "freshness_label": "New",
+   "first_seen": "2026-11-18T19:00:00+00:00",
+   "last_updated": "2026-11-18T19:05:00+00:00",
+   "explainer": {
+    "what": "The minutes record that almost all participants saw further tightening as likely appropriate under their baseline outlook, even though the Fed chose to hold rates in October while it gathered more information.",
+    "why": "US rates set the global cost of money. Expectations of more hikes move bond yields, the dollar and capital flows into markets such as India.",
+    "before": "At its 27–28 October meeting the Fed held its benchmark rate in a 3.75%–4% range.",
+    "who": "Borrowers and savers in the US, and investors in emerging markets whose currencies and stocks react to US rates.",
+    "next": "Officials said they expect inflation to fall sharply in 2027 and beyond, CNBC reports."
+   },
+   "claims": [
+    {
+     "text": "Almost all participants judged further rate rises likely appropriate in the months ahead",
+     "kind": "official",
+     "source": "FOMC minutes via Bloomberg, CNBC"
+    },
+    {
+     "text": "The Fed held rates in a 3.75%–4% range in October",
+     "kind": "confirmed",
+     "source": "CNBC"
+    },
+    {
+     "text": "AI was viewed as a driver of both inflation and possible financial instability",
+     "kind": "reported",
+     "source": "CNBC"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-10-28",
+     "text": "Fed holds rates at 3.75%–4%",
+     "source": "CNBC",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "Minutes of the October meeting released",
+     "source": "CNBC; Bloomberg",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "What did almost all Fed officials say would likely be needed?",
+    "options": [
+     "Rate cuts",
+     "Holding rates for a year",
+     "Further rate hikes"
+    ],
+    "answer": 2
+   },
+   "sources": [
+    {
+     "publisher": "Bloomberg",
+     "source_id": "bloomberg",
+     "url": "https://www.bloomberg.com/news/articles/2026-11-18/fed-minutes-show-almost-all-officials-expect-more-rate-hikes",
+     "title": "Fed Minutes Show Almost All Officials Expect More Rate Hikes",
+     "published": "2026-11-18T19:05:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "CNBC",
+     "source_id": "cnbc",
+     "url": "https://www.cnbc.com/2026/11/18/fed-minutes-october-2026.html",
+     "title": "Fed minutes October 2026: Officials expect more rate hikes, worry about AI",
+     "published": "2026-11-18T19:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 2,
+   "signals": {
+    "credibility": {
+     "best_source": "Bloomberg",
+     "independent_sources": 2,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 69,
+     "model": 72,
+     "reasons": [
+      "Central-bank policy outlook (+66)",
+      "Covered by 2 independent newsrooms (+3)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_2d883171f0",
+   "headline": "COP31 talks stay deadlocked on finance and fossil fuels as deadline nears",
+   "summary": "With COP31 in Antalya due to close on Friday, ministers remained deadlocked over who pays for climate action, how fast the world moves away from fossil fuels and how to keep the transition fair for poorer countries, UN News reported. Countries did launch a new global check on whether climate pledges are being kept, and observers expect talks to overrun.",
+   "why": "COP decisions set the pace of the shift away from fossil fuels and how much climate finance reaches developing countries, including India, which negotiates as a large emerging economy.",
+   "category": "Climate & Environment",
+   "subcategory": "COP31 · Antalya",
+   "topics": [
+    "climate",
+    "diplomacy",
+    "energy",
+    "world"
+   ],
+   "regions": [
+    "World"
+   ],
+   "status": "developing",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 69.2,
+   "credibility": 96.0,
+   "freshness": 64.3,
+   "practical": 40.0,
+   "label": "Significant",
+   "breaking": false,
+   "freshness_label": "New development",
+   "first_seen": "2026-11-17T12:00:00+00:00",
+   "last_updated": "2026-11-18T18:00:00+00:00",
+   "explainer": {
+    "what": "Negotiators in Antalya are stuck on three questions: who pays, how fast to move off fossil fuels, and whether the transition can be fair for poorer countries. A new global check on whether climate promises are being kept was launched on Wednesday.",
+    "why": "The final text will guide national climate plans and finance pledges for the next year.",
+    "before": "The summit, hosted jointly by Turkey and Australia, opened on 9 November. A contentious 18-page draft cover decision exposed divisions between delegations, Al Jazeera reports.",
+    "who": "Climate-vulnerable developing countries seeking finance, fossil-fuel producers, and every country updating its climate plans.",
+    "next": "Talks are scheduled to end on Friday 20 November; observers told UN News they expect at least one extra night. Agriculture negotiations were pushed back to intersessional talks in Bonn, Carbon Brief reports."
+   },
+   "claims": [
+    {
+     "text": "Ministers remain deadlocked on finance, fossil fuels and a fair transition",
+     "kind": "reported",
+     "source": "UN News"
+    },
+    {
+     "text": "Countries launched a new global check on climate pledges",
+     "kind": "confirmed",
+     "source": "UN News"
+    },
+    {
+     "text": "Agriculture talks failed to reach consensus and move to Bonn",
+     "kind": "reported",
+     "source": "Carbon Brief"
+    },
+    {
+     "text": "What the final COP31 decision will contain",
+     "kind": "uncertain",
+     "source": ""
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-09",
+     "text": "COP31 opens in Antalya",
+     "source": "Al Jazeera",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-17",
+     "text": "Draft cover decision exposes divisions",
+     "source": "Al Jazeera",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "New global check on climate pledges launched; agriculture talks stall",
+     "source": "UN News; Carbon Brief",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-20",
+     "text": "Scheduled close",
+     "source": "UN News",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "What is COP31 still deadlocked on?",
+    "options": [
+     "Venue for COP32",
+     "Who pays and how fast to quit fossil fuels",
+     "Membership of Australia"
+    ],
+    "answer": 1
+   },
+   "sources": [
+    {
+     "publisher": "UN News",
+     "source_id": "un_news",
+     "url": "https://news.un.org/en/story/2026/11/1168833",
+     "title": "COP31 deadlock persists as countries launch new 'climate reality check'",
+     "published": "2026-11-18T18:00:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": false
+    },
+    {
+     "publisher": "Al Jazeera",
+     "source_id": "al_jazeera",
+     "url": "https://www.aljazeera.com/news/2026/11/17/tensions-rise-over-draft-climate-deal-at-cop31",
+     "title": "Tensions rise over draft climate deal at COP31",
+     "published": "2026-11-17T12:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    },
+    {
+     "publisher": "Carbon Brief",
+     "source_id": "carbon_brief",
+     "url": "https://carbonbrief.org/cropped-18-november-2026-cop31-special-edition",
+     "title": "Cropped 18 November 2026: COP31 special edition",
+     "published": "2026-11-18T12:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 3,
+   "signals": {
+    "credibility": {
+     "best_source": "UN News",
+     "independent_sources": 3,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 70,
+     "model": 68,
+     "reasons": [
+      "Global climate negotiations (+60)",
+      "Covered by 3 independent newsrooms (+6)",
+      "Primary/official source (+4)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_62c4a2f51b",
+   "headline": "Brent slips to about $92 as US crude stockpiles rise",
+   "summary": "Brent crude slipped to around $92 a barrel on Wednesday after industry data showed US crude stocks rose by 5.28 million barrels. Ongoing US–Iran fighting and disruption in the Strait of Hormuz limited the fall. Brent is down about 16% over the past month but remains roughly 44% higher than a year ago.",
+   "why": "India imports most of the crude it uses, so lower oil prices ease pressure on inflation, the rupee and the trade deficit.",
+   "category": "Markets & Finance",
+   "subcategory": "Commodities · Oil",
+   "topics": [
+    "energy",
+    "gulf",
+    "india",
+    "markets",
+    "oil"
+   ],
+   "regions": [
+    "World",
+    "India"
+   ],
+   "status": "confirmed",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 58.0,
+   "credibility": 80.0,
+   "freshness": 64.3,
+   "practical": 66.0,
+   "label": "Notable",
+   "breaking": false,
+   "freshness_label": "New development",
+   "first_seen": "2026-11-18T04:00:00+00:00",
+   "last_updated": "2026-11-18T18:00:00+00:00",
+   "explainer": {
+    "what": "Brent traded between about $91.7 and $92.6 a barrel on Wednesday, depending on the time and venue reported, after an industry estimate showed a 5.28-million-barrel build in US crude inventories.",
+    "why": "Oil is India's largest import, so its price shapes fuel costs, inflation and the rupee.",
+    "before": "Brent has fallen about 16% in a month, Trading Economics data show, but is still around 44% above its level a year ago.",
+    "who": "Fuel buyers, airlines, oil marketing companies and importing economies.",
+    "next": "Prices remain exposed to the Iran war and shipping disruption in the Strait of Hormuz."
+   },
+   "claims": [
+    {
+     "text": "US crude stocks rose by 5.28 million barrels",
+     "kind": "reported",
+     "source": "Industry data via Invezz"
+    },
+    {
+     "text": "Brent fell to about $92 a barrel",
+     "kind": "confirmed",
+     "source": "Gulf News; Trading Economics; Invezz"
+    }
+   ],
+   "timeline": [],
+   "check": {
+    "q": "Why did Brent crude slip on Wednesday?",
+    "options": [
+     "US crude stocks rose",
+     "OPEC raised output",
+     "Hormuz fully reopened"
+    ],
+    "answer": 0
+   },
+   "sources": [
+    {
+     "publisher": "Trading Economics",
+     "source_id": "trading_economics",
+     "url": "https://tradingeconomics.com/commodity/brent-crude-oil",
+     "title": "Brent oil - Price - Chart - Historical Data - News",
+     "published": "2026-11-18T18:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    },
+    {
+     "publisher": "Gulf News",
+     "source_id": "gulf_news",
+     "url": "https://gulfnews.com/business/energy/oil-slips-in-asia-led-by-murban-brent-wti-what-to-know-on-nov-18-2026-1.500751476",
+     "title": "Oil Prices Drop as Crude Benchmarks Slide on November 18, 2026",
+     "published": "2026-11-18T04:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    },
+    {
+     "publisher": "Invezz",
+     "source_id": "invezz",
+     "url": "https://invezz.com/news/2026/11/18/oil-price-today-api-528-million-barrel-us-crude-build/",
+     "title": "Oil price today: Brent slips as fresh data shows rise in US crude inventory",
+     "published": "2026-11-18T05:03:00+00:00",
+     "precision": "minute",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 3,
+   "signals": {
+    "credibility": {
+     "best_source": "Trading Economics",
+     "independent_sources": 3,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 58,
+     "model": 58,
+     "reasons": [
+      "Energy prices (+52)",
+      "Covered by 3 independent newsrooms (+6)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_35647f03e1",
+   "headline": "US Supreme Court declines Trump appeal over University of California grant cuts",
+   "summary": "The US Supreme Court on Monday declined to hear the Trump administration's appeal over its cuts to about $59 million in federal research grants for University of California researchers, made as part of its push against diversity programmes. The decision leaves a lower-court ruling against the administration in place; no justice noted a dissent.",
+   "why": "The grants must keep being restored, and the case signals legal limits, at least for now, on cutting research funding over the perceived viewpoint of the research.",
+   "category": "Politics & Policy",
+   "subcategory": "US · Courts",
+   "topics": [
+    "courts",
+    "education",
+    "politics",
+    "research",
+    "universities",
+    "us"
+   ],
+   "regions": [
+    "US"
+   ],
+   "status": "confirmed",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 57.4,
+   "credibility": 100.0,
+   "freshness": 11.8,
+   "practical": 35.0,
+   "label": "Notable",
+   "breaking": false,
+   "freshness_label": "Earlier this week",
+   "first_seen": "2026-11-16T16:00:00+00:00",
+   "last_updated": "2026-11-16T17:00:00+00:00",
+   "explainer": {
+    "what": "By declining the case, the Supreme Court left in place a May ruling of the 9th US Circuit Court of Appeals against the grant terminations.",
+    "why": "The court, which has a 6-3 conservative majority, has been highly deferential to the administration in other cases, Reuters notes.",
+    "before": "UC researchers challenged the cuts after multiyear grants from three federal agencies were cut off.",
+    "who": "University of California researchers, and academics at other institutions facing similar cuts.",
+    "next": "The lower-court ruling stands, so the affected grants must continue to be restored, Reuters reports."
+   },
+   "claims": [
+    {
+     "text": "The Supreme Court declined to hear the appeal, with no noted dissent",
+     "kind": "confirmed",
+     "source": "Reuters; The Hill"
+    },
+    {
+     "text": "The grants cut over the research's perceived viewpoint must continue to be restored",
+     "kind": "analysis",
+     "source": "Erwin Chemerinsky via Reuters"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-16",
+     "text": "Supreme Court declines the appeal",
+     "source": "Reuters",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "What did the US Supreme Court do in the UC grants case?",
+    "options": [
+     "Declined to hear the appeal",
+     "Ordered the grants cut",
+     "Sent it back for a new trial"
+    ],
+    "answer": 0
+   },
+   "sources": [
+    {
+     "publisher": "Reuters",
+     "source_id": "reuters",
+     "url": "https://www.usnews.com/news/politics/articles/2026-11-16/supreme-court-rejects-trump-appeal-defending-diversity-related-grant-cuts",
+     "title": "Supreme Court Rejects Trump Appeal Defending Diversity-Related Grant Cuts",
+     "published": "2026-11-16T16:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 1,
+     "translated": false
+    },
+    {
+     "publisher": "The Hill",
+     "source_id": "the_hill",
+     "url": "https://thehill.com/regulation/court-battles/6222654-scotus-declines-trump-dei-appeal/",
+     "title": "Supreme Court declines Donald Trump administration's DEI research grant appeal",
+     "published": "2026-11-16T17:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 2,
+   "signals": {
+    "credibility": {
+     "best_source": "Reuters",
+     "independent_sources": 2,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 57,
+     "model": 58,
+     "reasons": [
+      "Court decision with policy consequences (+54)",
+      "Covered by 2 independent newsrooms (+3)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_e1f678e703",
+   "headline": "Health Ministry proposes central oversight of antimicrobials",
+   "summary": "The Union Health Ministry has proposed amending the New Drugs and Clinical Trials Rules, 2019, to bring antimicrobials under central regulatory oversight, and has separately proposed a licensing framework for the wholesale sale of bulk drugs, according to two government press releases. Their full text was not available to us.",
+   "why": "Antimicrobial resistance makes common infections harder to treat, and how antibiotics are approved and sold is one of the main levers for slowing it.",
+   "category": "Health",
+   "subcategory": "Drug regulation · India",
+   "topics": [
+    "drug-regulation",
+    "health",
+    "india",
+    "politics"
+   ],
+   "regions": [
+    "India"
+   ],
+   "status": "confirmed",
+   "limited": true,
+   "limited_reason": "Based on the two release headlines only (translated from Hindi). The full draft rules were not available, so details such as timelines and penalties are not covered.",
+   "importance": 56.0,
+   "credibility": 92.0,
+   "freshness": 97.9,
+   "practical": 60.0,
+   "label": "Notable",
+   "breaking": false,
+   "freshness_label": "New",
+   "first_seen": "2026-11-19T06:08:00+00:00",
+   "last_updated": "2026-11-19T06:08:00+00:00",
+   "explainer": {
+    "what": "Two draft proposals from the Union Health Ministry, published through PIB on 19 November.",
+    "why": "Central oversight could tighten how antimicrobials are approved and sold across states.",
+    "before": "",
+    "who": "Drug makers, wholesalers, pharmacists and patients.",
+    "next": "Draft rules are usually opened for public comment before they are finalised; the comment period was not available."
+   },
+   "claims": [
+    {
+     "text": "The ministry proposed bringing antimicrobials under central regulatory oversight",
+     "kind": "official",
+     "source": "PIB"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-19",
+     "text": "Two draft proposals published",
+     "source": "PIB",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "What does the Health Ministry want to bring under central oversight?",
+    "options": [
+     "Vaccines",
+     "Antimicrobials",
+     "Ayurvedic drugs"
+    ],
+    "answer": 1
+   },
+   "sources": [
+    {
+     "publisher": "Press Information Bureau",
+     "source_id": "pib",
+     "url": "https://www.pib.gov.in/PressReleaseDetail.aspx?PRID=2338285",
+     "title": "Union Health Ministry proposes amending the New Drugs and Clinical Trials Rules, 2019, to bring antimicrobials under central regulatory oversight",
+     "published": "2026-11-19T06:08:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": true
+    },
+    {
+     "publisher": "Press Information Bureau",
+     "source_id": "pib",
+     "url": "https://www.pib.gov.in/PressReleaseDetail.aspx?PRID=2338288",
+     "title": "Union Health Ministry proposes a separate licensing framework for wholesale sale of bulk drugs",
+     "published": "2026-11-19T06:08:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": true
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 1,
+   "signals": {
+    "credibility": {
+     "best_source": "Press Information Bureau",
+     "independent_sources": 1,
+     "corroborated": false
+    },
+    "importance": {
+     "rules": 56,
+     "model": 56,
+     "reasons": [
+      "Health regulation change (+52)",
+      "Primary/official source (+4)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_5219871deb",
+   "headline": "Delhi lifts GRAP Stage III curbs as air eases to 'poor'; schools reopen",
+   "summary": "Delhi's air quality index eased to 214 on Wednesday morning, in the 'poor' category, and authorities lifted Stage III curbs under GRAP, the city's anti-pollution plan, letting schools resume physical classes. Stages I and II stay in force. The day's reading settled at 232, and air quality is likely to turn 'very poor' on Friday.",
+   "why": "GRAP stages decide what is allowed in the capital, from construction to school timings, so a return to 'very poor' air could bring curbs back within days.",
+   "category": "India",
+   "subcategory": "Delhi · Air quality",
+   "topics": [
+    "delhi",
+    "health",
+    "india",
+    "pollution"
+   ],
+   "regions": [
+    "India",
+    "Delhi"
+   ],
+   "status": "confirmed",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 53.8,
+   "credibility": 94.0,
+   "freshness": 52.2,
+   "practical": 78.0,
+   "label": "Notable",
+   "breaking": false,
+   "freshness_label": "New development",
+   "first_seen": "2026-11-18T05:00:00+00:00",
+   "last_updated": "2026-11-18T12:00:00+00:00",
+   "explainer": {
+    "what": "The CPCB's city-level AQI was 214 at 7 am on Wednesday, down from 246 a day earlier, and Stage III restrictions were lifted. By the evening the daily reading was 232.",
+    "why": "Each GRAP stage brings specific restrictions; moving down a stage eases rules for schools and construction.",
+    "before": "Stage III curbs had been in place during worse air earlier in November.",
+    "who": "Residents of Delhi-NCR, especially children, older people and anyone with respiratory illness; schools and builders.",
+    "next": "Unfavourable weather is expected to push air quality to 'very poor' on Friday, PTI reports. Vehicle emissions are the largest contributor to PM2.5."
+   },
+   "claims": [
+    {
+     "text": "AQI 214 at 7 am; GRAP Stage III lifted; schools reopen",
+     "kind": "official",
+     "source": "CPCB data via Business Standard"
+    },
+    {
+     "text": "Vehicular emissions are the biggest contributor to PM2.5",
+     "kind": "reported",
+     "source": "PTI via The Federal"
+    },
+    {
+     "text": "Air quality likely to turn 'very poor' on Friday",
+     "kind": "reported",
+     "source": "PTI via The Federal"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-18",
+     "text": "AQI eases to 214; Stage III curbs lifted",
+     "source": "Business Standard",
+     "precision": "day"
+    },
+    {
+     "at": "2026-11-18",
+     "text": "Daily AQI settles at 232; season's coldest morning",
+     "source": "PTI",
+     "precision": "day"
+    }
+   ],
+   "check": {
+    "q": "What changed for Delhi schools?",
+    "options": [
+     "They moved online",
+     "They resumed physical classes",
+     "They closed till December"
+    ],
+    "answer": 1
+   },
+   "sources": [
+    {
+     "publisher": "Press Trust of India",
+     "source_id": "pti",
+     "url": "https://thefederal.com/category/states/north/delhi/delhi-air-quality-poor-232-aqi-records-season-coldest-morning-at-11c-263362",
+     "title": "Delhi's air quality 'poor' with 232 AQI, capital records season's coldest morning at 11°C",
+     "published": "2026-11-18T12:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 1,
+     "translated": false
+    },
+    {
+     "publisher": "Business Standard",
+     "source_id": "business_standard",
+     "url": "https://www.business-standard.com/amp/india-news/grap-iii-restrictions-revoked-as-delhi-aqi-falls-to-214-schools-reopen-126111800135_1.html",
+     "title": "Delhi air pollution: AQI drops to 214; Grap-III curbs go, schools reopen",
+     "published": "2026-11-18T05:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 2,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 2,
+   "signals": {
+    "credibility": {
+     "best_source": "Press Trust of India",
+     "independent_sources": 2,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 53,
+     "model": 55,
+     "reasons": [
+      "City-wide public-health conditions (+50)",
+      "Covered by 2 independent newsrooms (+3)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_41ddc6b544",
+   "headline": "Spain and 20 other countries join WHO call to 'bend the curve' on obesity",
+   "summary": "Spain and 20 other countries joined the World Health Organization and UNICEF at a global obesity summit in Spain to launch a call to action, 'Bending the curve by 2030', committing to faster progress on prevention, early intervention and care. More than 1 billion people worldwide now live with obesity, according to WHO.",
+   "why": "Obesity drives diabetes, heart disease and other chronic illness; shared national targets can shape food policy and health budgets.",
+   "category": "Health",
+   "subcategory": "Global health policy",
+   "topics": [
+    "health",
+    "world"
+   ],
+   "regions": [
+    "World"
+   ],
+   "status": "confirmed",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 51.2,
+   "credibility": 94.0,
+   "freshness": 21.2,
+   "practical": 35.0,
+   "label": "Notable",
+   "breaking": false,
+   "freshness_label": "Earlier this week",
+   "first_seen": "2026-11-17T10:00:00+00:00",
+   "last_updated": "2026-11-17T10:00:00+00:00",
+   "explainer": {
+    "what": "A political call to action launched at the Global Obesity Summit.",
+    "why": "Countries that sign up commit to faster action on prevention and care.",
+    "before": "",
+    "who": "Health ministries, food and drink makers, and people living with obesity.",
+    "next": ""
+   },
+   "claims": [
+    {
+     "text": "More than 1 billion people live with obesity",
+     "kind": "official",
+     "source": "WHO"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-11-17",
+     "text": "Call to action launched",
+     "source": "WHO",
+     "precision": "day"
+    }
+   ],
+   "check": {},
+   "sources": [
+    {
+     "publisher": "World Health Organization",
+     "source_id": "who",
+     "url": "https://www.who.int/news/item/17-11-2026-leaders-commit-to-accelerate-action-on-obesity-prevention-and-control",
+     "title": "Leaders commit to accelerate action on obesity prevention and control",
+     "published": "2026-11-17T10:00:00+00:00",
+     "precision": "day",
+     "type": "official",
+     "tier": 1,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 1,
+   "signals": {
+    "credibility": {
+     "best_source": "World Health Organization",
+     "independent_sources": 1,
+     "corroborated": false
+    },
+    "importance": {
+     "rules": 56,
+     "model": 44,
+     "reasons": [
+      "Health (+46)",
+      "Affects many people (+6)",
+      "Primary/official source (+4)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  },
+  {
+   "id": "s_669e7f37ec",
+   "headline": "Rediff refiles for ₹600-crore IPO; Urban Company opens ₹2,500-crore QIP",
+   "summary": "Rediff has filed updated draft papers with SEBI for a ₹600 crore IPO made up entirely of new shares, while Urban Company opened a ₹2,500 crore qualified institutional placement, according to two startup-market trackers. AI software startup Dreamteam raised $53 million from Together Fund, Accel and Premji Invest.",
+   "why": "Listings and follow-on fundraises show whether public markets remain open to Indian tech companies.",
+   "category": "Startups",
+   "subcategory": "Funding & IPOs",
+   "topics": [
+    "india",
+    "ipo",
+    "markets",
+    "startups",
+    "venture"
+   ],
+   "regions": [
+    "India"
+   ],
+   "status": "confirmed",
+   "limited": false,
+   "limited_reason": "",
+   "importance": 34.0,
+   "credibility": 64.0,
+   "freshness": 45.5,
+   "practical": 35.0,
+   "label": "Notable",
+   "breaking": false,
+   "freshness_label": "New development",
+   "first_seen": "2026-11-17T13:00:00+00:00",
+   "last_updated": "2026-11-18T08:00:00+00:00",
+   "explainer": {
+    "what": "Rediff's refiled DRHP is a fresh issue only, with no offer for sale. Urban Company's QIP targets institutional investors.",
+    "why": "Fresh-issue IPOs bring new money into the company rather than paying out existing shareholders.",
+    "before": "",
+    "who": "Startup founders, early investors and IPO investors.",
+    "next": "SEBI's observations on the refiled papers come next."
+   },
+   "claims": [
+    {
+     "text": "Rediff refiled for a ₹600 crore IPO",
+     "kind": "reported",
+     "source": "StartupTalky; IndiaIPO"
+    }
+   ],
+   "timeline": [],
+   "check": {},
+   "sources": [
+    {
+     "publisher": "IndiaIPO",
+     "source_id": "indiaipo",
+     "url": "https://www.indiaipo.in/daily-reporter/india-ipo-daily-market-ipo-updates-18th-november-2026",
+     "title": "India IPO Daily Market & IPO Updates | 18th November 2026",
+     "published": "2026-11-18T08:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    },
+    {
+     "publisher": "StartupTalky",
+     "source_id": "startuptalky",
+     "url": "https://startuptalky.com/news/daily-indian-funding-roundup-key-news-17-november-2026/",
+     "title": "Daily Indian Funding Roundup & Key News - 17 November 2026: Dreamteam Raises $53 Million, Urban Company Opens ₹2,500 Crore QIP",
+     "published": "2026-11-17T13:00:00+00:00",
+     "precision": "day",
+     "type": "report",
+     "tier": 3,
+     "translated": false
+    }
+   ],
+   "analysis": [],
+   "independent_sources": 2,
+   "signals": {
+    "credibility": {
+     "best_source": "IndiaIPO",
+     "independent_sources": 2,
+     "corroborated": true
+    },
+    "importance": {
+     "rules": 30,
+     "model": 40,
+     "reasons": [
+      "Capital-markets deal (+36)",
+      "Large sums involved (+6)",
+      "Covered by 2 independent newsrooms (+3)",
+      "Routine update (-15)"
+     ]
+    }
+   },
+   "provider": "reviewed"
+  }
+ ],
+ "rejected": [
+  {
+   "title": "Iran War Executive Update — November 18, 2026",
+   "publisher": "williamusher.substack.com",
+   "url": "https://williamusher.substack.com/p/iran-war-executive-update-november-ca7",
+   "stage": "source",
+   "reason": "Blocked domain (blog, newsletter or aggregator)"
+  },
+  {
+   "title": "Sensex Falls 500 Pts; Nifty Slips Below 25,250 on Profit Booking",
+   "publisher": "HDFC Sky",
+   "url": "https://hdfcsky.com/news/market-close-report-today-november-18-2026-nifty-sensex-decline-after-recent-rally-as-profit-booking-sets-in",
+   "stage": "source",
+   "reason": "HDFC Sky publishes brokerage/marketing content, not news reporting"
+  },
+  {
+   "title": "Closing Bell, 18 November 2026: Sensex and Nifty Fall as Profit Booking, Metal Stocks Weigh",
+   "publisher": "Kotak Neo",
+   "url": "https://www.kotakneo.com/news/market-news/market-wrap-18-november-2026-profit-booking-and-a-drag-in-metal-stocks-pull-benchmarks-down/",
+   "stage": "source",
+   "reason": "Kotak Neo publishes brokerage/marketing content, not news reporting"
+  },
+  {
+   "title": "Delhi's air quality drops to poor category with AQI at 289",
+   "publisher": "socialnews.xyz",
+   "url": "https://www.socialnews.xyz/2026/11/18/delhis-air-quality-drops-to-poor-category-with-aqi-at-289/",
+   "stage": "source",
+   "reason": "Blocked domain (blog, newsletter or aggregator)"
+  },
+  {
+   "title": "French Presidency announces Paris Call for AI Safety and Security",
+   "publisher": "af.net",
+   "url": "https://af.net/realtime/page/263/?news_page=41",
+   "stage": "source",
+   "reason": "Blocked domain (blog, newsletter or aggregator)"
+  },
+  {
+   "title": "Trump said to privately vent at Vance for blaming GOP's shellacking in midterms on Iran war",
+   "publisher": "The Times of Israel",
+   "url": "https://www.timesofisrael.com/liveblog-november-18-2026/",
+   "stage": "quality",
+   "reason": "Too trivial to take your attention (importance 25)",
+   "articles": 1
+  },
+  {
+   "title": "Stock Market Close: Sensex sheds 500 pts, Nifty at 25,228; consumer durables top sectoral loser",
+   "publisher": "Business Standard",
+   "url": "https://www.business-standard.com/amp/markets/news/stock-market-live-november-18-nse-bse-sensex-today-nifty50-gift-nifty-crude-oil-prices-bond-yields-hero-motocorp-share-price-hcltech-stock-price-today-ipo-today-126111800134_1.html",
+   "stage": "quality",
+   "reason": "Too trivial to take your attention (importance 25)",
+   "articles": 1
+  },
+  {
+   "title": "Stock Market Highlights: Sensex ends 446 pts up; Nifty at 26,192; Financial, O&G shares gain",
+   "publisher": "Business Standard",
+   "url": "https://www.business-standard.com/markets/news/stock-market-live-updates-november-20-nse-bse-sensex-today-nifty-gift-nifty-india-us-deal-nvidia-results-ipo-125112000062_1.html",
+   "stage": "freshness",
+   "reason": "Old news: last reported 364 days ago",
+   "articles": 1
+  },
+  {
+   "title": "Humyn Labs Raises $47 Mn To Collect Training Data For Robots",
+   "publisher": "Inc42",
+   "url": "https://inc42.com/",
+   "stage": "quality",
+   "reason": "Too trivial to take your attention (importance 22)",
+   "articles": 1
+  },
+  {
+   "title": "Press release of Consumer Price Index on base 2024=100 for October, 2026",
+   "publisher": "Press Information Bureau",
+   "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2335416&reg=48&lang=2",
+   "stage": "freshness",
+   "reason": "Old news: last reported 7 days ago",
+   "articles": 2
+  },
+  {
+   "title": "RBI announces premature redemption rate for Sovereign Gold Bonds due November 18",
+   "publisher": "ANI",
+   "url": "https://www.tribuneindia.com/news/business/rbi-announces-premature-redemption-rate-for-sovereign-gold-bonds-due-november-18",
+   "stage": "quality",
+   "reason": "Too trivial to take your attention (importance 19)",
+   "articles": 1
+  },
+  {
+   "title": "CAT 2026 admit card @ iimcat.ac.in, IIM Indore to release hall ticket today, November 4",
+   "publisher": "Business Standard",
+   "url": "https://www.business-standard.com/amp/education/news/cat-2026-admit-card-iim-indore-to-release-hall-ticket-today-at-website-nc-126110400554_1.html",
+   "stage": "freshness",
+   "reason": "Old news: last reported 15 days ago",
+   "articles": 1
+  }
+ ]
+}

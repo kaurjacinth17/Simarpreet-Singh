@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sift News Brief</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#12151B">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sift">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,500..700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a wire-desk column. Each story is a full-height panel ruled off like a newspaper
+   column; the masthead carries a live "reports read → kept" meter, the one bold element. */
+:root {
+  --paper: #F4F5F7;
+  --sheet: #FFFFFF;
+  --ink: #12151B;
+  --muted: #5A6372;
+  --rule: #DADEE5;
+  --accent: #2441C9;
+  --alert: #C4331F;
+  --accent-soft: #E6EAFB;
+  --alert-soft: #FBE9E6;
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0E1014; --sheet: #161920; --ink: #ECEEF2; --muted: #98A1B0; --rule: #272C35;
+    --accent: #93A6FF; --alert: #FF7A63; --accent-soft: #1C2340; --alert-soft: #3A1E1A; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0E1014; --sheet: #161920; --ink: #ECEEF2; --muted: #98A1B0; --rule: #272C35;
+  --accent: #93A6FF; --alert: #FF7A63; --accent-soft: #1C2340; --alert-soft: #3A1E1A; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.app { max-width: 480px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; background: var(--sheet); overflow: clip;
+  border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); position: relative; }
+
+/* Masthead */
+.mast { padding: 12px 16px 0; border-bottom: 1px solid var(--rule); background: var(--sheet); }
+.mast-row { display: flex; align-items: center; gap: 6px; }
+.brand-wrap { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.brand { font: italic 700 27px/1 var(--display); letter-spacing: -0.02em; }
+.brand b { color: var(--accent); font-style: normal; }
+.dateline { font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.icon-btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); }
+.icon-btn:hover { background: var(--paper); color: var(--ink); }
+.icon-btn svg { width: 19px; height: 19px; }
+
+.meter { display: block; width: 100%; text-align: left; margin: 10px 0 6px; }
+.meter-line { display: flex; gap: 8px; align-items: baseline; font: 500 12px/1.3 var(--mono); color: var(--muted); flex-wrap: wrap; }
+.meter-line strong { color: var(--ink); font-weight: 500; }
+.meter-line .kept { color: var(--accent); }
+.meter-line .arrow { opacity: .5; }
+.meter-bar { display: flex; height: 6px; margin-top: 7px; gap: 2px; }
+.meter-bar span { display: block; height: 100%; border-radius: 1px; animation: grow .9s cubic-bezier(.2,.8,.2,1) both; transform-origin: left; }
+.meter-bar span:nth-child(2) { animation-delay: .25s; } .meter-bar span:nth-child(3) { animation-delay: .5s; }
+@keyframes grow { from { transform: scaleX(0); } }
+.meter-bar .b-reports { background: var(--rule); flex: 1; position: relative; }
+.meter-hint { font: 400 11px/1.3 var(--mono); color: var(--muted); margin-top: 5px; }
+.meter:hover .meter-hint { color: var(--accent); }
+
+.tabs { display: flex; gap: 2px; align-items: center; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { padding: 10px 10px 11px; font: 500 14px/1 var(--body); color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tab .n { font: 500 10.5px/1 var(--mono); margin-left: 4px; color: var(--muted); }
+.tab .n.hot { color: var(--alert); }
+.catch { margin-right: 4px; padding: 8px 13px; border-radius: 999px; font: 500 13px/1 var(--body); background: var(--ink); color: var(--sheet); white-space: nowrap; }
+
+/* Feed */
+main { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--paper); position: relative; overflow: clip; }
+main.listmode { overflow-y: auto; display: block; }
+main.listmode .card { position: relative; inset: auto; min-height: 0; padding: 22px 20px 18px; border-bottom: 1px solid var(--rule); display: flex; flex-direction: column;
+  gap: 14px; background: var(--sheet); touch-action: auto; user-select: auto; -webkit-user-select: auto; transition: none; }
+/* Deck */
+.progress { display: flex; gap: 3px; padding: 10px 16px 0; }
+.progress i { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background .3s; }
+.progress i.done { background: var(--ink); }
+.progress i.now { background: var(--accent); }
+.deckmeta { display: flex; justify-content: space-between; padding: 7px 18px 0; font: 500 11px/1.2 var(--mono); color: var(--muted); letter-spacing: .04em; }
+.deck { position: relative; flex: 1; min-height: 0; margin: 10px 14px 0; }
+.card { position: absolute; inset: 0; touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform;
+  transition: transform .32s cubic-bezier(.2,.8,.2,1), opacity .32s; }
+.card.dragging { transition: none; }
+.card[data-depth="1"] { transform: translateY(12px) scale(.955); pointer-events: none; }
+.card[data-depth="2"] { transform: translateY(24px) scale(.91); opacity: .6; pointer-events: none; }
+.card[data-depth="3"] { transform: translateY(24px) scale(.91); opacity: 0; pointer-events: none; }
+.flip { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .5s cubic-bezier(.3,.7,.2,1); }
+.card.flipped .flip { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--sheet); border: 1px solid var(--rule);
+  border-radius: 18px; box-shadow: 0 10px 30px rgb(15 20 30 / .08), 0 1px 2px rgb(15 20 30 / .06); overflow-y: auto; padding: 18px 18px 16px;
+  display: flex; flex-direction: column; gap: 12px; }
+.face.back { transform: rotateY(180deg); gap: 0; }
+.face { touch-action: pan-y; overscroll-behavior: contain; }
+.bh { font: 600 20px/1.2 var(--display); margin: 10px 0 2px; text-wrap: balance; }
+.bsec { padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.bsec:last-child { border-bottom: 0; }
+.bsec h4 { margin: 0 0 5px; font: 500 10.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.bsec p { margin: 0; font-size: 15px; line-height: 1.5; }
+.bsec .note { font-size: 12px; color: var(--muted); margin-top: 5px; }
+.bsec .srclist { margin: 0; border-top: 0; }
+.swipehint { display: flex; justify-content: space-between; padding: 9px 26px 0; font: 500 10.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.swipehint span:first-child { color: var(--alert); } .swipehint span:last-child { color: var(--accent); }
+.ctlbar { display: flex; justify-content: space-around; padding: 6px 8px 10px; }
+.cb { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 58px; padding: 7px 4px; border-radius: 10px; font: 500 11.5px/1 var(--body); color: var(--muted); text-decoration: none; }
+.cb:hover { background: var(--sheet); color: var(--ink); }
+.cb svg { width: 21px; height: 21px; }
+.cb.on { color: var(--accent); }
+.cb:disabled { opacity: .35; cursor: default; }
+.sharegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; }
+.shr { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12.5px; text-decoration: none; color: var(--ink); padding: 6px 0; }
+.shr b { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 700 17px/1 var(--body); }
+.shr svg { width: 46px; height: 46px; padding: 12px; border-radius: 50%; background: var(--paper); }
+.face .hl { font-size: 24.5px; }
+.face .sum { font-size: 16px; }
+.face-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 8px; border-top: 1px solid var(--rule); }
+.hint { font: 500 10.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.stamp { position: absolute; top: 22px; z-index: 3; padding: 6px 10px; border: 2.5px solid; border-radius: 8px; font: 700 15px/1 var(--mono); letter-spacing: .08em;
+  text-transform: uppercase; opacity: 0; pointer-events: none; background: var(--sheet); }
+.stamp.yes { left: 18px; color: var(--accent); transform: rotate(-12deg); }
+.stamp.no { right: 18px; color: var(--alert); transform: rotate(12deg); }
+.heart { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 4; }
+.heart svg { width: 96px; height: 96px; color: var(--accent); filter: drop-shadow(0 6px 16px rgb(0 0 0 / .2)); animation: pop .8s ease-out forwards; }
+@keyframes pop { 0% { transform: scale(.2); opacity: 0; } 25% { transform: scale(1.15); opacity: 1; } 60% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.05); opacity: 0; } }
+.controls { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 14px 0 16px; }
+.ctl { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; background: var(--sheet); border: 1px solid var(--rule);
+  box-shadow: 0 3px 10px rgb(15 20 30 / .07); color: var(--muted); transition: transform .15s; }
+.ctl:active { transform: scale(.92); }
+.ctl svg { width: 22px; height: 22px; }
+.ctl.big { width: 60px; height: 60px; }
+.ctl.no { color: var(--alert); }
+.ctl.yes { color: #fff; background: var(--accent); border-color: var(--accent); }
+.ctl.sm { width: 42px; height: 42px; }
+.ctl.sm svg { width: 18px; height: 18px; }
+.ctl.on { color: var(--accent); border-color: var(--accent); }
+.ctl:disabled { opacity: .35; cursor: default; }
+.back-why { border-left: 2px solid var(--accent); padding-left: 12px; }
+.back-why p { margin: 0; font: 500 19px/1.35 var(--display); }
+.mini { font-size: 14px; }
+.mini .claims li { grid-template-columns: 84px 1fr; font-size: 13.5px; }
+.linkbtn { color: var(--accent); font-weight: 600; font-size: 14px; text-align: left; }
+.coach { position: absolute; inset: 0; z-index: 15; background: rgb(10 12 16 / .72); color: #fff; display: grid; place-items: center; padding: 24px; text-align: center; }
+.coach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 14px; max-width: 320px; }
+.coach-grid div { display: grid; gap: 6px; justify-items: center; font-size: 13.5px; line-height: 1.35; }
+.coach-grid b { font: 600 26px/1 var(--display); }
+.coach h3 { font: 600 24px/1.2 var(--display); margin: 0 0 18px; }
+.coach .btn { margin-top: 22px; background: #fff; color: #12151B; }
+/* End card + quiz */
+.finish { position: absolute; inset: 0; overflow-y: auto; padding: 26px 22px 30px; display: flex; flex-direction: column; gap: 16px; }
+.finish h2 { font: 600 32px/1.08 var(--display); margin: 0; text-wrap: balance; }
+.finish .big { font: 600 54px/1 var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
+.statrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 10px; }
+.stat b { display: block; font: 600 26px/1 var(--display); font-variant-numeric: tabular-nums; }
+.stat span { font: 500 10.5px/1.3 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.quiz { background: var(--sheet); border: 1px solid var(--rule); border-radius: 16px; padding: 16px; display: grid; gap: 10px; }
+.quiz .qn { font: 500 10.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.quiz .q { font: 600 19px/1.25 var(--display); margin: 0; text-wrap: balance; }
+.opt { text-align: left; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 10px; font-size: 15px; font-weight: 500; transition: .2s; }
+.opt:hover:not(:disabled) { border-color: var(--muted); }
+.opt.right { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.opt.wrong { border-color: var(--alert); background: var(--alert-soft); color: var(--alert); }
+.opt:disabled { cursor: default; }
+.qsrc { font-size: 13px; color: var(--muted); }
+.btnrow { display: flex; gap: 10px; }
+.btnrow .btn { flex: 1; }
+/* Stories (Catch me up) */
+.stories { position: absolute; inset: 0; z-index: 25; background: #0D1016; color: #F1F3F7; display: flex; flex-direction: column; user-select: none; -webkit-user-select: none; }
+.stories .bars { display: flex; gap: 4px; padding: 14px 14px 0; }
+.stories .bars i { flex: 1; height: 3px; border-radius: 2px; background: rgb(255 255 255 / .25); overflow: hidden; }
+.stories .bars i b { display: block; height: 100%; width: 0; background: #fff; }
+.stories .top { display: flex; align-items: center; padding: 12px 16px; gap: 10px; }
+.stories .top .t { font: 500 11px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: rgb(255 255 255 / .7); flex: 1; }
+.stories .top button { color: #fff; width: 34px; height: 34px; display: grid; place-items: center; }
+.slide { flex: 1; padding: 10px 24px 30px; display: flex; flex-direction: column; justify-content: center; gap: 18px; animation: rise .45s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+.slide .sec-l { font: 500 12px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #9FB0FF; }
+.slide h2 { font: 600 31px/1.1 var(--display); margin: 0; text-wrap: balance; }
+.slide p { margin: 0; font-size: 16.5px; line-height: 1.5; color: rgb(255 255 255 / .82); }
+.slide .num { font: 600 120px/0.8 var(--display); color: rgb(159 176 255 / .25); }
+.slide .open { align-self: flex-start; padding: 10px 16px; border-radius: 999px; background: #fff; color: #0D1016; font-weight: 600; font-size: 14px; }
+.slide .src { font: 400 12px/1.4 var(--mono); color: rgb(255 255 255 / .55); }
+.stories .tapzones { position: absolute; inset: 70px 0 0; display: grid; grid-template-columns: 1fr 2fr; z-index: 1; }
+.stories .slide .open { position: relative; z-index: 2; }
+.paused { font: 500 11px/1 var(--mono); color: rgb(255 255 255 / .6); text-align: center; padding-bottom: 14px; min-height: 25px; }
+.kicker { display: flex; align-items: center; gap: 10px; font: 500 11px/1.2 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.idx { color: var(--muted); opacity: .7; }
+.lab { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.lab::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.lab-major::before { background: var(--accent); }
+.lab-significant::before { background: var(--accent); opacity: .55; }
+.lab-breaking { color: var(--alert); }
+.lab-breaking::before { background: var(--alert); animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--alert) 18%, transparent); } }
+.cat { font: 500 11px/1.3 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: -6px; }
+.hl { font: 600 27px/1.14 var(--display); font-variation-settings: "opsz" 40; letter-spacing: -0.012em; margin: 0; text-wrap: balance; }
+.sum { margin: 0; font-size: 16.5px; line-height: 1.56; max-width: 65ch; }
+.limited { font-size: 13.5px; line-height: 1.45; color: var(--muted); border: 1px dashed var(--rule); padding: 9px 11px; border-radius: 6px; }
+.limited b { color: var(--ink); font-weight: 600; }
+.why { border-left: 2px solid var(--accent); padding: 1px 0 1px 12px; }
+.why-k { display: block; font: 500 10.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.why p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); }
+.srcbtn { text-align: left; font-size: 13px; line-height: 1.45; color: var(--muted); display: block; }
+.srcbtn strong { color: var(--ink); font-weight: 500; }
+.srcbtn .chev { display: inline-block; font-family: var(--mono); margin-right: 6px; color: var(--ink); transition: transform .2s; }
+.srcbtn[aria-expanded="true"] .chev { transform: rotate(90deg); }
+.srclist { list-style: none; margin: -4px 0 0; padding: 0; border-top: 1px solid var(--rule); }
+.srclist li { border-bottom: 1px solid var(--rule); }
+.srclist a { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 9px 0; text-decoration: none; }
+.srclist .p { font-weight: 500; font-size: 13.5px; }
+.srclist .t { font: 400 11.5px/1.4 var(--mono); color: var(--muted); text-align: right; }
+.srclist .h { grid-column: 1 / -1; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.tag { font: 500 9.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 3px 5px; border-radius: 3px; background: var(--paper); color: var(--muted); margin-left: 6px; vertical-align: 1px; }
+.tag.op { background: var(--alert-soft); color: var(--alert); }
+.actions { margin-top: auto; display: flex; gap: 4px; align-items: center; padding-top: 6px; border-top: 1px solid var(--rule); }
+.act { display: inline-flex; align-items: center; gap: 6px; padding: 9px 9px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--muted); text-decoration: none; }
+.act:hover { background: var(--paper); color: var(--ink); }
+.act svg { width: 17px; height: 17px; flex: none; }
+.act.on { color: var(--accent); }
+.act.primary { color: var(--ink); }
+.act.more { margin-left: auto; }
+.end { padding: 36px 24px 48px; text-align: center; color: var(--muted); font-size: 14px; }
+.end b { display: block; font: 600 20px/1.25 var(--display); color: var(--ink); margin-bottom: 6px; }
+.filterbar { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.filterbar button { color: var(--accent); font-weight: 500; }
+
+/* Sheets */
+.scrim { position: absolute; inset: 0; background: rgb(10 12 16 / .38); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
+.scrim.open { opacity: 1; pointer-events: auto; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 88%; background: var(--sheet); border-radius: 16px 16px 0 0; z-index: 21;
+  transform: translateY(102%); transition: transform .26s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; box-shadow: 0 -8px 30px rgb(0 0 0 / .14); }
+.sheet.open { transform: none; }
+.sheet-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px 10px; border-bottom: 1px solid var(--rule); }
+.sheet-head h3 { margin: 0; font: 600 19px/1.2 var(--display); flex: 1; text-wrap: balance; }
+.sheet-body { overflow-y: auto; padding: 6px 18px 26px; }
+.sec { padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.sec:last-child { border-bottom: 0; }
+.sec h4 { margin: 0 0 6px; font: 500 10.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.sec p { margin: 0; font-size: 15px; line-height: 1.55; }
+.sec .note { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.claims { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.claims li { display: grid; grid-template-columns: 92px 1fr; gap: 10px; font-size: 14px; line-height: 1.45; }
+.kind { font: 500 9.5px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 6px; border-radius: 4px; align-self: start; text-align: center; background: var(--paper); color: var(--muted); }
+.k-confirmed { background: var(--accent-soft); color: var(--accent); }
+.k-official { background: var(--accent-soft); color: var(--accent); opacity: .85; }
+.k-allegation { background: var(--alert-soft); color: var(--alert); }
+.k-uncertain { border: 1px dashed var(--rule); background: none; }
+.claims .src { display: block; font-size: 12px; color: var(--muted); }
+.tl { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 1px solid var(--rule); display: grid; gap: 10px; }
+.tl li { position: relative; font-size: 14px; line-height: 1.4; }
+.tl li::before { content: ""; position: absolute; left: -18.5px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--sheet); border: 1.5px solid var(--muted); }
+.tl li.future::before { border-style: dashed; }
+.tl time { display: block; font: 500 11px/1.3 var(--mono); color: var(--muted); }
+.tl .src { font-size: 12px; color: var(--muted); }
+.bars { display: grid; gap: 7px; }
+.bar { display: grid; grid-template-columns: 132px 1fr 34px; gap: 10px; align-items: center; font-size: 13px; }
+.bar .track { display: block; height: 6px; background: var(--paper); border-radius: 3px; overflow: hidden; }
+.bar .fill { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.bar .v { font: 500 12px/1 var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.bar .w { color: var(--muted); font: 400 11px/1 var(--mono); }
+.total { font: 600 34px/1 var(--display); font-variant-numeric: tabular-nums; }
+.total small { font: 500 12px/1 var(--mono); color: var(--muted); margin-left: 6px; }
+.reasons { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip { padding: 8px 12px; border-radius: 999px; border: 1px solid var(--rule); font-size: 13.5px; font-weight: 500; }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+.chip.prio[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.prio[aria-pressed="true"]::after { content: " ★"; }
+.chip.neg[aria-pressed="true"] { background: var(--alert-soft); color: var(--alert); border-color: var(--alert); }
+.rowbtn { display: flex; width: 100%; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 15px; text-align: left; }
+.rowbtn:last-child { border-bottom: 0; }
+.rowbtn svg { width: 18px; height: 18px; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.seg button { padding: 8px 12px; font-size: 13.5px; font-weight: 500; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--sheet); }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.rangevals { display: flex; justify-content: space-between; font: 500 12px/1 var(--mono); color: var(--muted); margin-top: 4px; }
+.btn { display: block; width: 100%; padding: 13px; border-radius: 10px; background: var(--ink); color: var(--sheet); font-weight: 600; font-size: 15px; text-align: center; }
+.btn.ghost { background: none; color: var(--ink); border: 1px solid var(--rule); }
+textarea { width: 100%; min-height: 70px; border: 1px solid var(--rule); border-radius: 8px; padding: 9px; font: inherit; font-size: 14px; background: var(--sheet); color: var(--ink); }
+.radio { display: flex; gap: 10px; align-items: center; padding: 7px 0; font-size: 14.5px; }
+.lede { font-size: 15px; color: var(--muted); margin: 10px 0 0; }
+.rej { list-style: none; padding: 0; margin: 0; }
+.rej li { padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 13.5px; line-height: 1.4; }
+.rej li:last-child { border-bottom: 0; }
+.rej .r { display: block; font: 500 11px/1.4 var(--mono); color: var(--alert); text-transform: none; }
+.rej .pub { color: var(--muted); }
+.stagehead { font: 500 10.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 0 2px; }
+.cu-sec { padding: 18px 20px 4px; }
+.cu-sec h3 { font: 500 10.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.cu-item { display: block; width: 100%; text-align: left; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.cu-item .h { font: 600 19px/1.22 var(--display); text-wrap: balance; display: block; }
+.cu-item .s { font-size: 14px; color: var(--muted); line-height: 1.45; display: block; margin-top: 4px; }
+.cu-hero { padding: 22px 20px 6px; }
+.cu-hero h2 { font: 600 28px/1.1 var(--display); margin: 0; }
+.cu-hero p { color: var(--muted); margin: 8px 0 0; font-size: 14.5px; }
+.livepill { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); z-index: 6; padding: 9px 15px; border-radius: 999px; background: var(--accent); color: #fff;
+  font: 600 13px/1 var(--body); box-shadow: 0 6px 18px rgb(36 65 201 / .35); animation: rise .35s ease-out; }
+.brow { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+.blab { font-size: 15px; }
+.brow input[type="time"], .tin { border: 1px solid var(--rule); border-radius: 8px; padding: 8px 9px; font: 500 14px var(--mono); background: var(--sheet); color: var(--ink); }
+.tin { width: 100%; font-family: var(--body); }
+.sw { position: relative; width: 40px; height: 24px; display: inline-block; }
+.sw input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
+.sw span { position: absolute; inset: 0; border-radius: 999px; background: var(--rule); transition: .2s; }
+.sw span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: .2s; box-shadow: 0 1px 2px rgb(0 0 0 / .2); }
+.sw input:checked + span { background: var(--accent); }
+.sw input:checked + span::after { transform: translateX(16px); }
+.sw input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.brow:has(input[type="checkbox"]:not(:checked)) input[type="time"] { opacity: .45; }
+.notif { background: var(--paper); border: 1px solid var(--rule); border-radius: 14px; padding: 11px 13px; }
+.nhead { display: flex; justify-content: space-between; font: 500 11px/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.nhead b { color: var(--ink); }
+.ntitle { font-weight: 600; font-size: 14.5px; margin-bottom: 3px; }
+.nbody { font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+.toast { position: absolute; left: 50%; bottom: 104px; transform: translate(-50%, 20px); background: var(--ink); color: var(--sheet); padding: 10px 14px;
+  border-radius: 10px; font-size: 14px; display: flex; gap: 14px; align-items: center; opacity: 0; pointer-events: none; transition: .2s; z-index: 30; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toast button { color: var(--accent); font-weight: 600; }
+:root[data-theme="dark"] .toast button, .toast button { filter: none; }
+.snapnote { font: 400 10.5px/1.35 var(--mono); color: var(--muted); padding: 6px 16px; border-bottom: 1px solid var(--rule); background: var(--paper); }
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+@media (max-width: 380px) { .hl { font-size: 24px; } .act span { display: none; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="mast">
+    <div class="mast-row">
+      <div class="brand-wrap"><div class="brand">Sift<b>.</b></div><div class="dateline" id="dateline"></div></div>
+      <button class="catch" id="catchBtn">Catch up</button>
+      <button class="icon-btn" id="viewBtn" aria-label="Switch between cards and list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg></button>
+      <button class="icon-btn" id="themeBtn" aria-label="Switch light or dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
+      <button class="icon-btn" id="prefsBtn" aria-label="Edit your preferences"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+    </div>
+    <button class="meter" id="meter" aria-label="See what was filtered out">
+      <div class="meter-line" id="meterLine"></div>
+      <div class="meter-bar" id="meterBar"></div>
+      <div class="meter-hint">Tap to see what we filtered out →</div>
+    </button>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="feed" aria-selected="true">For you</button>
+      <button class="tab" role="tab" data-tab="important">Important</button>
+      <button class="tab" role="tab" data-tab="breaking">Breaking<span class="n hot" id="nBreaking"></span></button>
+      <button class="tab" role="tab" data-tab="saved">Saved<span class="n" id="nSaved"></span></button>
+    </nav>
+  </header>
+  <div class="snapnote" id="snapnote" hidden></div>
+  <main id="view" tabindex="-1"></main>
+  <div class="scrim" id="scrim"></div>
+  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-head"><h3 id="sheetTitle"></h3><button class="icon-btn" id="sheetClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </section>
+  <div class="toast" id="toast" role="status"><span id="toastMsg"></span><button id="toastUndo" hidden>Undo</button></div>
+</div>
+
+<script id="snapshot" type="application/json">{"generated_at":"2026-11-19T06:45:00+00:00","stats":{"articles_scanned":51,"articles_rejected":5,"stories_formed":19,"duplicates_merged":27,"stories_rejected":7,"stories_kept":12,"rejections_by_stage":{"source":5,"quality":4,"freshness":3}},"weights":{"importance":0.3,"relevance":0.25,"credibility":0.2,"freshness":0.15,"practical":0.1},"feed_mix":{"personal":0.75,"global":0.25},"feed_settings":{"max_items":12,"min_total_score":48,"global_importance_floor":70,"must_know_importance":85,"relevance_floor":35},"interests":{"Business":["business","corporate","earnings","startups"],"Finance":["markets","central-banks","oil","ipo","rates"],"Artificial Intelligence":["ai","semiconductors"],"Technology":["technology","semiconductors","ai"],"Startups":["startups","ipo","venture"],"Politics":["politics","courts","geopolitics","us"],"Economy":["economy","inflation","central-banks","rates","oil","trade"],"World affairs":["geopolitics","world","conflict","diplomacy"],"India":["india","delhi"],"Science":["science","space","research"],"Healthcare":["health","public-health","drug-regulation"],"Education":["education","research","universities"],"Careers":["careers","jobs","education"],"Climate":["climate","pollution","energy"],"Sports":["sports"],"Entertainment":["entertainment"]},"stories":[{"id":"s_177e4a52ce","headline":"Trump meets Xi and Putin separately in Shenzhen ahead of first three-way talks","summary":"At the APEC summit in Shenzhen, US President Donald Trump held separate one-on-one meetings with Russia's Vladimir Putin and China's Xi Jinping on Thursday, ahead of an unprecedented three-way meeting. The White House said the agenda includes the Iran war and a possible nuclear arms agreement. US officials have played down chances of a deal.","why":"Leader-level talks between the US, China and Russia in this format have no precedent. Any movement on the Iran war or Ukraine could shift oil prices and shipping risk, which feed straight into India's import bill and inflation.","category":"World","subcategory":"Diplomacy · APEC","topics":["conflict","diplomacy","geopolitics","us","world"],"regions":["World","Asia"],"status":"developing","limited":false,"limited_reason":"","importance":86.0,"credibility":98.0,"freshness":99.7,"practical":45.0,"label":"Developing","breaking":true,"freshness_label":"New development","first_seen":"2026-11-13T12:00:00+00:00","last_updated":"2026-11-19T06:39:00+00:00","explainer":{"what":"On the second day of the APEC summit, Trump met Putin after the leaders' plenary session, then began a bilateral meeting with Xi at Kylin Villa, according to Nikkei Asia and Xinhua as cited by CNN. A three-way meeting of the three leaders was scheduled to follow.","why":"It is the first time the US, Chinese and Russian leaders have met together in this format. The agenda covers the Iran war, the war in Ukraine and nuclear arms, all of which move energy markets and global security.","before":"China's foreign ministry and the Kremlin confirmed the meeting in advance. Nikkei Asia reports this is Trump and Xi's third summit of the year as they manage a tense rivalry.","who":"Ukraine, which is not taking part; Gulf states and energy importers exposed to the Iran war; and countries that depend on US–China trade.","next":"The three-way meeting was due later on Thursday. A senior US official told CNN the talks were an entry point and that no agreement was expected."},"claims":[{"text":"Trump met Putin and Xi separately on the sidelines of APEC","kind":"confirmed","source":"Nikkei Asia; CNN citing Xinhua"},{"text":"The White House said Trump plans to discuss the Iran war and a possible three-way agreement on nuclear arms","kind":"official","source":"Al Jazeera"},{"text":"A senior US official said Washington does not expect to reach any agreement","kind":"official","source":"CNN"},{"text":"What, if anything, the three-way meeting produces","kind":"uncertain","source":""},{"text":"ORF America's Dhruva Jaishankar said Ukraine's absence raises doubts about what the talks can achieve","kind":"analysis","source":"ANI"}],"timeline":[{"at":"2026-11-13","text":"China and Russia confirm the Shenzhen trilateral","source":"CNN","precision":"day"},{"at":"2026-11-18","text":"Trump arrives in Shenzhen for APEC","source":"CNBC","precision":"day"},{"at":"2026-11-19","text":"Trump meets Putin after the plenary session","source":"Nikkei Asia","precision":"day"},{"at":"2026-11-19","text":"Trump–Xi bilateral begins at Kylin Villa","source":"CNN, citing Xinhua","precision":"day"},{"at":"2026-11-19","text":"Three-way meeting scheduled to follow","source":"NBC News","precision":"day"}],"check":{"q":"What did a senior US official say to expect from the three-way meeting?","options":["No agreement","A signed nuclear deal","A Ukraine ceasefire"],"answer":0},"sources":[{"publisher":"Nikkei Asia","source_id":"nikkei","url":"https://asia.nikkei.com/politics/international-relations/apec/apec-live-leaders-gather-for-family-photo-in-shenzhen","title":"APEC live: Trump arrives at resort for meetings with Xi, Putin","published":"2026-11-19T05:36:00+00:00","precision":"minute","type":"report","tier":2,"translated":false},{"publisher":"CNBC","source_id":"cnbc","url":"https://www.cnbc.com/2026/11/18/trump-xi-putin-china-apec.html","title":"Trump arrives in China for historic meeting with Xi, Putin","published":"2026-11-18T12:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false},{"publisher":"CNN","source_id":"cnn","url":"https://www.cnn.com/2026/11/13/politics/trump-putin-xi-meeting","title":"Trump to meet with China's Xi and Russia's Putin at historic trilateral sit-down on nuclear non-proliferation","published":"2026-11-13T12:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false},{"publisher":"CNN","source_id":"cnn","url":"https://edition.cnn.com/2026/11/17/politics/live-news/trump-visit-china-philippines","title":"Trump meeting Xi, Putin in China for high-stakes talks: APEC summit latest","published":"2026-11-19T05:30:00+00:00","precision":"day","type":"report","tier":2,"translated":false},{"publisher":"NBC News","source_id":"nbc","url":"https://www.nbcnews.com/politics/trump-administration/live-blog/trump-xi-putin-china-apec-congress-2026-live-updates-rcna609888","title":"Live updates: Trump sits down with Putin and Xi separately before historic three-way talks","published":"2026-11-19T06:39:00+00:00","precision":"minute","type":"report","tier":2,"translated":false},{"publisher":"Al Jazeera","source_id":"al_jazeera","url":"https://www.aljazeera.com/news/2026/11/19/what-do-trump-putin-and-xi-want-from-their-shenzhen-meeting","title":"What do Trump, Putin and Xi want from their Shenzhen meeting?","published":"2026-11-19T03:00:00+00:00","precision":"day","type":"explainer","tier":2,"translated":false}],"analysis":[{"publisher":"Atlantic Council","source_id":"atlantic_council","url":"https://www.atlanticcouncil.org/dispatches/what-trump-putin-and-xi-want-from-their-meeting-in-shenzhen/","title":"What Trump, Putin, and Xi want from their meeting in Shenzhen","published":"2026-11-18T12:00:00+00:00","precision":"day","type":"opinion","tier":3,"translated":false},{"publisher":"ANI","source_id":"ani","url":"https://www.tribuneindia.com/news/apec-summit/ukrainians-are-not-in-room-dhruva-jaishankar-casts-doubt-on-outcomes-of-trump-xi-putin-trilateral-talks-in-shenzhen","title":"\"Ukrainians are not in room\": Dhruva Jaishankar casts doubt on outcomes of Trump-Xi-Putin trilateral talks in Shenzhen","published":"2026-11-19T04:00:00+00:00","precision":"day","type":"analysis","tier":2,"translated":false}],"independent_sources":5,"signals":{"credibility":{"best_source":"Nikkei Asia","independent_sources":5,"corroborated":true},"importance":{"rules":86,"model":86,"reasons":["Leader-level diplomacy between major powers (+70)","Unprecedented development (+4)","Covered by 5 independent newsrooms (+12)"]}},"provider":"reviewed"},{"id":"s_039829c9f8","headline":"Tanker attacked in Strait of Hormuz as US–Iran hostilities build","summary":"A tanker was attacked in the Strait of Hormuz on Wednesday, UK maritime agency UKMTO said, and an Indian minister said three Indian sailors were safe after a separate tanker attack in the Gulf. A US military official said American warplanes struck an Iranian missile site, and a US advisory showed tighter curbs on Iranian oil transfers at sea.","why":"Attacks on Gulf shipping keep oil-supply risk high, which feeds into fuel prices and inflation in import-dependent economies such as India. Indian seafarers are among those directly exposed.","category":"World","subcategory":"Middle East · Iran war","topics":["conflict","energy","gulf","india","us","world"],"regions":["World","Middle East","India"],"status":"developing","limited":false,"limited_reason":"","importance":84.0,"credibility":95.0,"freshness":88.2,"practical":55.0,"label":"Developing","breaking":true,"freshness_label":"New","first_seen":"2026-11-18T07:51:00+00:00","last_updated":"2026-11-19T03:07:00+00:00","explainer":{"what":"UKMTO reported a tanker attack in the Strait of Hormuz. Separately, an Indian minister said three Indian crew were safe after another tanker was hit by a projectile. A US official said US warplanes struck an Iranian missile site, and a US advisory showed tighter curbs on ship-to-ship oil transfers.","why":"Hormuz is a key route for Gulf oil and gas. Each attack raises shipping and insurance risk and keeps a premium in crude prices.","before":"The war began on 28 February. Gulf News reports that diplomatic efforts to end it remain stalled.","who":"Ship crews and operators in the Gulf, Gulf states facing Iranian drones and missiles (the UAE condemned attacks on Kuwait and Bahrain), and fuel importers.","next":"Israel is considering military action against Iran in the coming days, Israel's Channel 12 reported without citing a source. This is unconfirmed."},"claims":[{"text":"A tanker was attacked in the Strait of Hormuz","kind":"official","source":"UKMTO via ABC News"},{"text":"Three Indian sailors are safe after a projectile hit another tanker","kind":"official","source":"Indian minister via Khaleej Times"},{"text":"American warplanes struck an Iranian missile site","kind":"reported","source":"US military official via Khaleej Times"},{"text":"The US tightened curbs on Iranian oil transfers at sea","kind":"reported","source":"Advisory seen by Dawn"},{"text":"Trump said Iran was 'looking at gases' and 'biological weapons'; the US Homeland Security chief dismissed a related dirty-bomb report","kind":"allegation","source":"ABC News; Dawn"},{"text":"Israel is considering military action against Iran in the coming days","kind":"uncertain","source":"Channel 12 via The Times of Israel"}],"timeline":[{"at":"2026-02-28","text":"War begins","source":"Gulf News","precision":"day"},{"at":"2026-11-18","text":"UAE reports an ADNOC ship attacked; flights to Saudi Arabia suspended","source":"Gulf News","precision":"day"},{"at":"2026-11-18","text":"Three Indian sailors safe after tanker attack","source":"Khaleej Times","precision":"day"},{"at":"2026-11-18","text":"US tightens blockade with curbs on oil transfers at sea","source":"Dawn","precision":"day"},{"at":"2026-11-18","text":"Tanker attacked in the Strait of Hormuz","source":"UKMTO via ABC News","precision":"day"}],"check":{"q":"What did an Indian minister say about three Indian sailors?","options":["They were detained by Iran","They are safe","They are missing"],"answer":1},"sources":[{"publisher":"ABC News","source_id":"abc_news","url":"https://abcnews.com/International/live-updates/iran-live-updates-tanker-attacked-strait-hormuz-ukmto/?id=138171071","title":"Iran live updates: Trump says Iran 'looking at gases' and 'biological weapons' amid dirty bomb report","published":"2026-11-19T03:07:00+00:00","precision":"minute","type":"report","tier":2,"translated":false},{"publisher":"The Times of Israel","source_id":"times_of_israel","url":"https://www.timesofisrael.com/liveblog-november-18-2026/","title":"Nov. 18: US reissues security warnings to Americans in Gulf after Iranian strikes","published":"2026-11-18T15:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false},{"publisher":"Dawn","source_id":"dawn","url":"https://www.dawn.com/live/iran-israel-war","title":"Live Updates: War returns to Iran with Israel, US strikes","published":"2026-11-18T16:39:00+00:00","precision":"minute","type":"report","tier":2,"translated":false},{"publisher":"Khaleej Times","source_id":"khaleej_times","url":"https://www.khaleejtimes.com/world/mena/us-israel-iran-saudi-arabia-yemen-war-live-updates-november-18-2026","title":"Three Indian sailors safe after attack on oil tanker in Gulf on Nov 18: Minister","published":"2026-11-18T12:29:00+00:00","precision":"minute","type":"report","tier":3,"translated":false},{"publisher":"Gulf News","source_id":"gulf_news","url":"https://gulfnews.com/uae/usisrael-iran-war-what-uae-residents-need-to-know-today-nov-18-2026-1.500751757","title":"US/Israel-Iran war: What UAE residents need to know today (Nov. 18, 2026)","published":"2026-11-18T07:51:00+00:00","precision":"minute","type":"report","tier":3,"translated":false}],"analysis":[],"independent_sources":5,"signals":{"credibility":{"best_source":"ABC News","independent_sources":5,"corroborated":true},"importance":{"rules":84,"model":84,"reasons":["Armed conflict affecting a major shipping and energy route (+72)","Covered by 5 independent newsrooms (+12)"]}},"provider":"reviewed"},{"id":"s_b8785a000c","headline":"Nvidia revenue doubles to $115.8 billion as board rules out Huang's return","summary":"Nvidia reported third-quarter revenue of $115.8 billion, up 103% from a year earlier, and forecast about $130 billion for the current quarter. On the earnings call, chairman Harvey Jones said the board does not intend to reinstate Jensen Huang, who resigned as CEO on 12 November and later said he was willing to return.","why":"Nvidia's results are a bellwether for global spending on AI infrastructure. The leadership vacuum, and congressional questions over chip exports to China, add governance risk at a company central to the AI build-out.","category":"Technology & AI","subcategory":"Semiconductors · Earnings","topics":["ai","business","corporate","earnings","markets","semiconductors","technology"],"regions":["World","US"],"status":"confirmed","limited":false,"limited_reason":"","importance":81.2,"credibility":100.0,"freshness":32.9,"practical":40.0,"label":"Major","breaking":false,"freshness_label":"Earlier this week","first_seen":"2026-11-12T21:00:00+00:00","last_updated":"2026-11-17T22:42:00+00:00","explainer":{"what":"For the quarter ended 25 October, Nvidia's revenue rose 103% to $115.8 billion and Data Center revenue rose 110% to $107.6 billion. It guided to $130 billion, plus or minus 2%, for the next quarter. The board said it will not bring back Huang.","why":"Nvidia is the leading supplier of AI data-centre chips, so its numbers are read as a gauge of the whole AI investment cycle.","before":"Huang resigned as president, CEO and director on 12 November. CFO Colette Kress became interim CEO and Harvey C. Jones the board's first chair. On 17 November Huang said he was open to returning.","who":"Investors, the cloud companies and AI labs that buy Nvidia's chips, and Nvidia's employees.","next":"Huang has agreed to transcribed interviews with several US House committees on 1 December, Al Jazeera reports."},"claims":[{"text":"Q3 revenue was $115.8 billion, up 103%; Data Center revenue was $107.6 billion","kind":"confirmed","source":"NVIDIA results; SEC 8-K"},{"text":"The board does not intend to reinstate Huang as CEO","kind":"official","source":"Chairman Harvey C. Jones via TechCrunch"},{"text":"Huang said he was willing to return as CEO","kind":"official","source":"Huang statement via Bloomberg"},{"text":"Huang agreed to interviews with House committees on 1 December","kind":"reported","source":"Al Jazeera"},{"text":"Reports said one of Huang's relationships allegedly involved a suspected Chinese spy. This has not been established.","kind":"allegation","source":"Al Jazeera"}],"timeline":[{"at":"2026-11-12","text":"Huang resigns; Colette Kress named interim CEO","source":"NVIDIA","precision":"day"},{"at":"2026-11-17","text":"Huang says he is open to returning","source":"Bloomberg","precision":"day"},{"at":"2026-11-17","text":"Q3 results; board says it will not reinstate Huang","source":"NVIDIA; TechCrunch","precision":"day"},{"at":"2026-12-01","text":"Scheduled: Huang's interviews with House committees","source":"Al Jazeera","precision":"day"}],"check":{"q":"How much did Nvidia's quarterly revenue grow from a year earlier?","options":["48%","103%","210%"],"answer":1},"sources":[{"publisher":"US SEC filings","source_id":"sec","url":"https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000088/q3fy27pr.htm","title":"NVIDIA CORP - Form 8-K - Third Quarter Fiscal 2027 results","published":"2026-11-17T21:20:00+00:00","precision":"day","type":"official","tier":1,"translated":false},{"publisher":"NVIDIA Newsroom / IR","source_id":"nvidia_ir","url":"https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition","title":"NVIDIA Announces CEO Transition","published":"2026-11-12T21:00:00+00:00","precision":"day","type":"official","tier":1,"translated":false},{"publisher":"NVIDIA Newsroom / IR","source_id":"nvidia_ir","url":"https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Third-Quarter-Fiscal-2027/","title":"NVIDIA Announces Financial Results for Third Quarter Fiscal 2027","published":"2026-11-17T21:20:00+00:00","precision":"day","type":"official","tier":1,"translated":false},{"publisher":"Bloomberg","source_id":"bloomberg","url":"https://bloomberg.com/news/articles/2026-11-17/huang-is-willing-to-return-as-nvidia-ceo-if-board-allows-it","title":"Nvidia's Jensen Huang Open to Rejoining as CEO Pending Board Decision","published":"2026-11-17T16:08:00+00:00","precision":"minute","type":"report","tier":2,"translated":false},{"publisher":"Al Jazeera","source_id":"al_jazeera","url":"https://www.aljazeera.com/economy/2026/11/17/jensen-huang-to-testify-before-us-house-committees-next-month","title":"Jensen Huang agrees to testify before US House, says can resume CEO role","published":"2026-11-17T12:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false},{"publisher":"TechCrunch","source_id":"techcrunch","url":"https://techcrunch.com/2026/11/17/nvidia-says-it-doesnt-plan-to-reappoint-jensen-huang-as-ceo/","title":"Nvidia says it doesn't plan to reappoint Jensen Huang as CEO","published":"2026-11-17T22:42:00+00:00","precision":"minute","type":"report","tier":3,"translated":false},{"publisher":"Yahoo Finance","source_id":"yahoo_finance","url":"https://finance.yahoo.com/technology/live/nvidia-earnings-live-nvidia-posts-q3-beat-board-says-it-will-not-reinstate-jensen-huang-as-ceo-221428433.html","title":"Nvidia earnings live: Nvidia posts Q3 beat as revenue rose 103% YOY to $115.8B, board says it will not reinstate Jensen Huang as CEO","published":"2026-11-17T22:18:00+00:00","precision":"minute","type":"report","tier":3,"translated":false}],"analysis":[],"independent_sources":6,"signals":{"credibility":{"best_source":"US SEC filings","independent_sources":6,"corroborated":true},"importance":{"rules":82,"model":80,"reasons":["Results of a company central to the AI industry (+60)","Large sums involved (+6)","Covered by 6 independent newsrooms (+12)","Primary/official source (+4)"]}},"provider":"reviewed"},{"id":"s_589515d674","headline":"Ebola cases in DR Congo more than double in three months, WHO says","summary":"The Ebola outbreak in the Democratic Republic of the Congo has more than doubled in three months, to over 11,000 cases and 5,400 deaths across 67 health zones in eight provinces, WHO chief Tedros Adhanom Ghebreyesus said on Tuesday as the agency's emergency committee on the Bundibugyo virus epidemic met for a third time.","why":"The speed of spread makes this a major regional health emergency; the emergency committee's advice guides the international response, from funding to travel measures.","category":"Health","subcategory":"Outbreaks · Ebola","topics":["health","public-health","world"],"regions":["World","Africa"],"status":"developing","limited":false,"limited_reason":"","importance":75.2,"credibility":88.0,"freshness":27.0,"practical":30.0,"label":"Significant","breaking":false,"freshness_label":"Earlier this week","first_seen":"2026-11-17T17:00:00+00:00","last_updated":"2026-11-17T17:00:00+00:00","explainer":{"what":"WHO reports more than 11,000 cases and 5,400 deaths in 67 health zones across eight provinces of DR Congo, double the toll of three months ago.","why":"Rapid growth over a wide area strains health systems and raises the risk of spread across borders.","before":"This was the third meeting of WHO's emergency committee on the Bundibugyo virus disease epidemic.","who":"Communities in eastern and central DR Congo, health workers, and neighbouring countries.","next":"The committee's recommendations are expected after the meeting. Tedros said children were paying a terrible price."},"claims":[{"text":"Over 11,000 cases and 5,400 deaths in 67 health zones","kind":"official","source":"WHO Director-General via UN News"}],"timeline":[{"at":"2026-11-17","text":"Emergency committee meets for the third time","source":"UN News","precision":"day"}],"check":{"q":"How many Ebola cases has DR Congo now reported?","options":["About 1,100","Over 11,000","Over 110,000"],"answer":1},"sources":[{"publisher":"UN News","source_id":"un_news","url":"https://news.un.org/en/story/2026/11/1168827","title":"World News in Brief: Ebola cases double in DR Congo, chemical exposure starts before birth, Türk concern over EU-Rwanda transfer plan","published":"2026-11-17T17:00:00+00:00","precision":"day","type":"official","tier":1,"translated":false}],"analysis":[],"independent_sources":1,"signals":{"credibility":{"best_source":"UN News","independent_sources":1,"corroborated":false},"importance":{"rules":76,"model":74,"reasons":["Public-health emergency or global health policy (+66)","Affects many people (+6)","Primary/official source (+4)"]}},"provider":"reviewed"},{"id":"s_3a261481b7","headline":"Fed minutes show nearly all officials expect further rate hikes","summary":"Minutes of the Federal Reserve's 27–28 October meeting show almost all policymakers judged that further rate increases would likely be appropriate in the months ahead to return inflation to the 2% target. The Fed held its benchmark rate in a 3.75%–4% range at that meeting. Officials also discussed AI as a driver of inflation and financial instability.","why":"Higher US rates tend to strengthen the dollar and can draw foreign money away from emerging markets, a swing factor for Indian equities and the rupee.","category":"Markets & Finance","subcategory":"Central banks · US Fed","topics":["central-banks","economy","inflation","markets","rates","us"],"regions":["US","World"],"status":"confirmed","limited":false,"limited_reason":"","importance":70.2,"credibility":96.0,"freshness":66.7,"practical":60.0,"label":"Significant","breaking":false,"freshness_label":"New","first_seen":"2026-11-18T19:00:00+00:00","last_updated":"2026-11-18T19:05:00+00:00","explainer":{"what":"The minutes record that almost all participants saw further tightening as likely appropriate under their baseline outlook, even though the Fed chose to hold rates in October while it gathered more information.","why":"US rates set the global cost of money. Expectations of more hikes move bond yields, the dollar and capital flows into markets such as India.","before":"At its 27–28 October meeting the Fed held its benchmark rate in a 3.75%–4% range.","who":"Borrowers and savers in the US, and investors in emerging markets whose currencies and stocks react to US rates.","next":"Officials said they expect inflation to fall sharply in 2027 and beyond, CNBC reports."},"claims":[{"text":"Almost all participants judged further rate rises likely appropriate in the months ahead","kind":"official","source":"FOMC minutes via Bloomberg, CNBC"},{"text":"The Fed held rates in a 3.75%–4% range in October","kind":"confirmed","source":"CNBC"},{"text":"AI was viewed as a driver of both inflation and possible financial instability","kind":"reported","source":"CNBC"}],"timeline":[{"at":"2026-10-28","text":"Fed holds rates at 3.75%–4%","source":"CNBC","precision":"day"},{"at":"2026-11-18","text":"Minutes of the October meeting released","source":"CNBC; Bloomberg","precision":"day"}],"check":{"q":"What did almost all Fed officials say would likely be needed?","options":["Rate cuts","Holding rates for a year","Further rate hikes"],"answer":2},"sources":[{"publisher":"Bloomberg","source_id":"bloomberg","url":"https://www.bloomberg.com/news/articles/2026-11-18/fed-minutes-show-almost-all-officials-expect-more-rate-hikes","title":"Fed Minutes Show Almost All Officials Expect More Rate Hikes","published":"2026-11-18T19:05:00+00:00","precision":"day","type":"report","tier":2,"translated":false},{"publisher":"CNBC","source_id":"cnbc","url":"https://www.cnbc.com/2026/11/18/fed-minutes-october-2026.html","title":"Fed minutes October 2026: Officials expect more rate hikes, worry about AI","published":"2026-11-18T19:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false}],"analysis":[],"independent_sources":2,"signals":{"credibility":{"best_source":"Bloomberg","independent_sources":2,"corroborated":true},"importance":{"rules":69,"model":72,"reasons":["Central-bank policy outlook (+66)","Covered by 2 independent newsrooms (+3)"]}},"provider":"reviewed"},{"id":"s_2d883171f0","headline":"COP31 talks stay deadlocked on finance and fossil fuels as deadline nears","summary":"With COP31 in Antalya due to close on Friday, ministers remained deadlocked over who pays for climate action, how fast the world moves away from fossil fuels and how to keep the transition fair for poorer countries, UN News reported. Countries did launch a new global check on whether climate pledges are being kept, and observers expect talks to overrun.","why":"COP decisions set the pace of the shift away from fossil fuels and how much climate finance reaches developing countries, including India, which negotiates as a large emerging economy.","category":"Climate & Environment","subcategory":"COP31 · Antalya","topics":["climate","diplomacy","energy","world"],"regions":["World"],"status":"developing","limited":false,"limited_reason":"","importance":69.2,"credibility":96.0,"freshness":64.3,"practical":40.0,"label":"Significant","breaking":false,"freshness_label":"New development","first_seen":"2026-11-17T12:00:00+00:00","last_updated":"2026-11-18T18:00:00+00:00","explainer":{"what":"Negotiators in Antalya are stuck on three questions: who pays, how fast to move off fossil fuels, and whether the transition can be fair for poorer countries. A new global check on whether climate promises are being kept was launched on Wednesday.","why":"The final text will guide national climate plans and finance pledges for the next year.","before":"The summit, hosted jointly by Turkey and Australia, opened on 9 November. A contentious 18-page draft cover decision exposed divisions between delegations, Al Jazeera reports.","who":"Climate-vulnerable developing countries seeking finance, fossil-fuel producers, and every country updating its climate plans.","next":"Talks are scheduled to end on Friday 20 November; observers told UN News they expect at least one extra night. Agriculture negotiations were pushed back to intersessional talks in Bonn, Carbon Brief reports."},"claims":[{"text":"Ministers remain deadlocked on finance, fossil fuels and a fair transition","kind":"reported","source":"UN News"},{"text":"Countries launched a new global check on climate pledges","kind":"confirmed","source":"UN News"},{"text":"Agriculture talks failed to reach consensus and move to Bonn","kind":"reported","source":"Carbon Brief"},{"text":"What the final COP31 decision will contain","kind":"uncertain","source":""}],"timeline":[{"at":"2026-11-09","text":"COP31 opens in Antalya","source":"Al Jazeera","precision":"day"},{"at":"2026-11-17","text":"Draft cover decision exposes divisions","source":"Al Jazeera","precision":"day"},{"at":"2026-11-18","text":"New global check on climate pledges launched; agriculture talks stall","source":"UN News; Carbon Brief","precision":"day"},{"at":"2026-11-20","text":"Scheduled close","source":"UN News","precision":"day"}],"check":{"q":"What is COP31 still deadlocked on?","options":["Venue for COP32","Who pays and how fast to quit fossil fuels","Membership of Australia"],"answer":1},"sources":[{"publisher":"UN News","source_id":"un_news","url":"https://news.un.org/en/story/2026/11/1168833","title":"COP31 deadlock persists as countries launch new 'climate reality check'","published":"2026-11-18T18:00:00+00:00","precision":"day","type":"official","tier":1,"translated":false},{"publisher":"Al Jazeera","source_id":"al_jazeera","url":"https://www.aljazeera.com/news/2026/11/17/tensions-rise-over-draft-climate-deal-at-cop31","title":"Tensions rise over draft climate deal at COP31","published":"2026-11-17T12:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false},{"publisher":"Carbon Brief","source_id":"carbon_brief","url":"https://carbonbrief.org/cropped-18-november-2026-cop31-special-edition","title":"Cropped 18 November 2026: COP31 special edition","published":"2026-11-18T12:00:00+00:00","precision":"day","type":"report","tier":3,"translated":false}],"analysis":[],"independent_sources":3,"signals":{"credibility":{"best_source":"UN News","independent_sources":3,"corroborated":true},"importance":{"rules":70,"model":68,"reasons":["Global climate negotiations (+60)","Covered by 3 independent newsrooms (+6)","Primary/official source (+4)"]}},"provider":"reviewed"},{"id":"s_62c4a2f51b","headline":"Brent slips to about $92 as US crude stockpiles rise","summary":"Brent crude slipped to around $92 a barrel on Wednesday after industry data showed US crude stocks rose by 5.28 million barrels. Ongoing US–Iran fighting and disruption in the Strait of Hormuz limited the fall. Brent is down about 16% over the past month but remains roughly 44% higher than a year ago.","why":"India imports most of the crude it uses, so lower oil prices ease pressure on inflation, the rupee and the trade deficit.","category":"Markets & Finance","subcategory":"Commodities · Oil","topics":["energy","gulf","india","markets","oil"],"regions":["World","India"],"status":"confirmed","limited":false,"limited_reason":"","importance":58.0,"credibility":80.0,"freshness":64.3,"practical":66.0,"label":"Notable","breaking":false,"freshness_label":"New development","first_seen":"2026-11-18T04:00:00+00:00","last_updated":"2026-11-18T18:00:00+00:00","explainer":{"what":"Brent traded between about $91.7 and $92.6 a barrel on Wednesday, depending on the time and venue reported, after an industry estimate showed a 5.28-million-barrel build in US crude inventories.","why":"Oil is India's largest import, so its price shapes fuel costs, inflation and the rupee.","before":"Brent has fallen about 16% in a month, Trading Economics data show, but is still around 44% above its level a year ago.","who":"Fuel buyers, airlines, oil marketing companies and importing economies.","next":"Prices remain exposed to the Iran war and shipping disruption in the Strait of Hormuz."},"claims":[{"text":"US crude stocks rose by 5.28 million barrels","kind":"reported","source":"Industry data via Invezz"},{"text":"Brent fell to about $92 a barrel","kind":"confirmed","source":"Gulf News; Trading Economics; Invezz"}],"timeline":[],"check":{"q":"Why did Brent crude slip on Wednesday?","options":["US crude stocks rose","OPEC raised output","Hormuz fully reopened"],"answer":0},"sources":[{"publisher":"Trading Economics","source_id":"trading_economics","url":"https://tradingeconomics.com/commodity/brent-crude-oil","title":"Brent oil - Price - Chart - Historical Data - News","published":"2026-11-18T18:00:00+00:00","precision":"day","type":"report","tier":3,"translated":false},{"publisher":"Gulf News","source_id":"gulf_news","url":"https://gulfnews.com/business/energy/oil-slips-in-asia-led-by-murban-brent-wti-what-to-know-on-nov-18-2026-1.500751476","title":"Oil Prices Drop as Crude Benchmarks Slide on November 18, 2026","published":"2026-11-18T04:00:00+00:00","precision":"day","type":"report","tier":3,"translated":false},{"publisher":"Invezz","source_id":"invezz","url":"https://invezz.com/news/2026/11/18/oil-price-today-api-528-million-barrel-us-crude-build/","title":"Oil price today: Brent slips as fresh data shows rise in US crude inventory","published":"2026-11-18T05:03:00+00:00","precision":"minute","type":"report","tier":3,"translated":false}],"analysis":[],"independent_sources":3,"signals":{"credibility":{"best_source":"Trading Economics","independent_sources":3,"corroborated":true},"importance":{"rules":58,"model":58,"reasons":["Energy prices (+52)","Covered by 3 independent newsrooms (+6)"]}},"provider":"reviewed"},{"id":"s_35647f03e1","headline":"US Supreme Court declines Trump appeal over University of California grant cuts","summary":"The US Supreme Court on Monday declined to hear the Trump administration's appeal over its cuts to about $59 million in federal research grants for University of California researchers, made as part of its push against diversity programmes. The decision leaves a lower-court ruling against the administration in place; no justice noted a dissent.","why":"The grants must keep being restored, and the case signals legal limits, at least for now, on cutting research funding over the perceived viewpoint of the research.","category":"Politics & Policy","subcategory":"US · Courts","topics":["courts","education","politics","research","universities","us"],"regions":["US"],"status":"confirmed","limited":false,"limited_reason":"","importance":57.4,"credibility":100.0,"freshness":11.8,"practical":35.0,"label":"Notable","breaking":false,"freshness_label":"Earlier this week","first_seen":"2026-11-16T16:00:00+00:00","last_updated":"2026-11-16T17:00:00+00:00","explainer":{"what":"By declining the case, the Supreme Court left in place a May ruling of the 9th US Circuit Court of Appeals against the grant terminations.","why":"The court, which has a 6-3 conservative majority, has been highly deferential to the administration in other cases, Reuters notes.","before":"UC researchers challenged the cuts after multiyear grants from three federal agencies were cut off.","who":"University of California researchers, and academics at other institutions facing similar cuts.","next":"The lower-court ruling stands, so the affected grants must continue to be restored, Reuters reports."},"claims":[{"text":"The Supreme Court declined to hear the appeal, with no noted dissent","kind":"confirmed","source":"Reuters; The Hill"},{"text":"The grants cut over the research's perceived viewpoint must continue to be restored","kind":"analysis","source":"Erwin Chemerinsky via Reuters"}],"timeline":[{"at":"2026-11-16","text":"Supreme Court declines the appeal","source":"Reuters","precision":"day"}],"check":{"q":"What did the US Supreme Court do in the UC grants case?","options":["Declined to hear the appeal","Ordered the grants cut","Sent it back for a new trial"],"answer":0},"sources":[{"publisher":"Reuters","source_id":"reuters","url":"https://www.usnews.com/news/politics/articles/2026-11-16/supreme-court-rejects-trump-appeal-defending-diversity-related-grant-cuts","title":"Supreme Court Rejects Trump Appeal Defending Diversity-Related Grant Cuts","published":"2026-11-16T16:00:00+00:00","precision":"day","type":"report","tier":1,"translated":false},{"publisher":"The Hill","source_id":"the_hill","url":"https://thehill.com/regulation/court-battles/6222654-scotus-declines-trump-dei-appeal/","title":"Supreme Court declines Donald Trump administration's DEI research grant appeal","published":"2026-11-16T17:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false}],"analysis":[],"independent_sources":2,"signals":{"credibility":{"best_source":"Reuters","independent_sources":2,"corroborated":true},"importance":{"rules":57,"model":58,"reasons":["Court decision with policy consequences (+54)","Covered by 2 independent newsrooms (+3)"]}},"provider":"reviewed"},{"id":"s_e1f678e703","headline":"Health Ministry proposes central oversight of antimicrobials","summary":"The Union Health Ministry has proposed amending the New Drugs and Clinical Trials Rules, 2019, to bring antimicrobials under central regulatory oversight, and has separately proposed a licensing framework for the wholesale sale of bulk drugs, according to two government press releases. Their full text was not available to us.","why":"Antimicrobial resistance makes common infections harder to treat, and how antibiotics are approved and sold is one of the main levers for slowing it.","category":"Health","subcategory":"Drug regulation · India","topics":["drug-regulation","health","india","politics"],"regions":["India"],"status":"confirmed","limited":true,"limited_reason":"Based on the two release headlines only (translated from Hindi). The full draft rules were not available, so details such as timelines and penalties are not covered.","importance":56.0,"credibility":92.0,"freshness":97.9,"practical":60.0,"label":"Notable","breaking":false,"freshness_label":"New","first_seen":"2026-11-19T06:08:00+00:00","last_updated":"2026-11-19T06:08:00+00:00","explainer":{"what":"Two draft proposals from the Union Health Ministry, published through PIB on 19 November.","why":"Central oversight could tighten how antimicrobials are approved and sold across states.","before":"","who":"Drug makers, wholesalers, pharmacists and patients.","next":"Draft rules are usually opened for public comment before they are finalised; the comment period was not available."},"claims":[{"text":"The ministry proposed bringing antimicrobials under central regulatory oversight","kind":"official","source":"PIB"}],"timeline":[{"at":"2026-11-19","text":"Two draft proposals published","source":"PIB","precision":"day"}],"check":{"q":"What does the Health Ministry want to bring under central oversight?","options":["Vaccines","Antimicrobials","Ayurvedic drugs"],"answer":1},"sources":[{"publisher":"Press Information Bureau","source_id":"pib","url":"https://www.pib.gov.in/PressReleaseDetail.aspx?PRID=2338285","title":"Union Health Ministry proposes amending the New Drugs and Clinical Trials Rules, 2019, to bring antimicrobials under central regulatory oversight","published":"2026-11-19T06:08:00+00:00","precision":"day","type":"official","tier":1,"translated":true},{"publisher":"Press Information Bureau","source_id":"pib","url":"https://www.pib.gov.in/PressReleaseDetail.aspx?PRID=2338288","title":"Union Health Ministry proposes a separate licensing framework for wholesale sale of bulk drugs","published":"2026-11-19T06:08:00+00:00","precision":"day","type":"official","tier":1,"translated":true}],"analysis":[],"independent_sources":1,"signals":{"credibility":{"best_source":"Press Information Bureau","independent_sources":1,"corroborated":false},"importance":{"rules":56,"model":56,"reasons":["Health regulation change (+52)","Primary/official source (+4)"]}},"provider":"reviewed"},{"id":"s_5219871deb","headline":"Delhi lifts GRAP Stage III curbs as air eases to 'poor'; schools reopen","summary":"Delhi's air quality index eased to 214 on Wednesday morning, in the 'poor' category, and authorities lifted Stage III curbs under GRAP, the city's anti-pollution plan, letting schools resume physical classes. Stages I and II stay in force. The day's reading settled at 232, and air quality is likely to turn 'very poor' on Friday.","why":"GRAP stages decide what is allowed in the capital, from construction to school timings, so a return to 'very poor' air could bring curbs back within days.","category":"India","subcategory":"Delhi · Air quality","topics":["delhi","health","india","pollution"],"regions":["India","Delhi"],"status":"confirmed","limited":false,"limited_reason":"","importance":53.8,"credibility":94.0,"freshness":52.2,"practical":78.0,"label":"Notable","breaking":false,"freshness_label":"New development","first_seen":"2026-11-18T05:00:00+00:00","last_updated":"2026-11-18T12:00:00+00:00","explainer":{"what":"The CPCB's city-level AQI was 214 at 7 am on Wednesday, down from 246 a day earlier, and Stage III restrictions were lifted. By the evening the daily reading was 232.","why":"Each GRAP stage brings specific restrictions; moving down a stage eases rules for schools and construction.","before":"Stage III curbs had been in place during worse air earlier in November.","who":"Residents of Delhi-NCR, especially children, older people and anyone with respiratory illness; schools and builders.","next":"Unfavourable weather is expected to push air quality to 'very poor' on Friday, PTI reports. Vehicle emissions are the largest contributor to PM2.5."},"claims":[{"text":"AQI 214 at 7 am; GRAP Stage III lifted; schools reopen","kind":"official","source":"CPCB data via Business Standard"},{"text":"Vehicular emissions are the biggest contributor to PM2.5","kind":"reported","source":"PTI via The Federal"},{"text":"Air quality likely to turn 'very poor' on Friday","kind":"reported","source":"PTI via The Federal"}],"timeline":[{"at":"2026-11-18","text":"AQI eases to 214; Stage III curbs lifted","source":"Business Standard","precision":"day"},{"at":"2026-11-18","text":"Daily AQI settles at 232; season's coldest morning","source":"PTI","precision":"day"}],"check":{"q":"What changed for Delhi schools?","options":["They moved online","They resumed physical classes","They closed till December"],"answer":1},"sources":[{"publisher":"Press Trust of India","source_id":"pti","url":"https://thefederal.com/category/states/north/delhi/delhi-air-quality-poor-232-aqi-records-season-coldest-morning-at-11c-263362","title":"Delhi's air quality 'poor' with 232 AQI, capital records season's coldest morning at 11°C","published":"2026-11-18T12:00:00+00:00","precision":"day","type":"report","tier":1,"translated":false},{"publisher":"Business Standard","source_id":"business_standard","url":"https://www.business-standard.com/amp/india-news/grap-iii-restrictions-revoked-as-delhi-aqi-falls-to-214-schools-reopen-126111800135_1.html","title":"Delhi air pollution: AQI drops to 214; Grap-III curbs go, schools reopen","published":"2026-11-18T05:00:00+00:00","precision":"day","type":"report","tier":2,"translated":false}],"analysis":[],"independent_sources":2,"signals":{"credibility":{"best_source":"Press Trust of India","independent_sources":2,"corroborated":true},"importance":{"rules":53,"model":55,"reasons":["City-wide public-health conditions (+50)","Covered by 2 independent newsrooms (+3)"]}},"provider":"reviewed"},{"id":"s_41ddc6b544","headline":"Spain and 20 other countries join WHO call to 'bend the curve' on obesity","summary":"Spain and 20 other countries joined the World Health Organization and UNICEF at a global obesity summit in Spain to launch a call to action, 'Bending the curve by 2030', committing to faster progress on prevention, early intervention and care. More than 1 billion people worldwide now live with obesity, according to WHO.","why":"Obesity drives diabetes, heart disease and other chronic illness; shared national targets can shape food policy and health budgets.","category":"Health","subcategory":"Global health policy","topics":["health","world"],"regions":["World"],"status":"confirmed","limited":false,"limited_reason":"","importance":51.2,"credibility":94.0,"freshness":21.2,"practical":35.0,"label":"Notable","breaking":false,"freshness_label":"Earlier this week","first_seen":"2026-11-17T10:00:00+00:00","last_updated":"2026-11-17T10:00:00+00:00","explainer":{"what":"A political call to action launched at the Global Obesity Summit.","why":"Countries that sign up commit to faster action on prevention and care.","before":"","who":"Health ministries, food and drink makers, and people living with obesity.","next":""},"claims":[{"text":"More than 1 billion people live with obesity","kind":"official","source":"WHO"}],"timeline":[{"at":"2026-11-17","text":"Call to action launched","source":"WHO","precision":"day"}],"check":{},"sources":[{"publisher":"World Health Organization","source_id":"who","url":"https://www.who.int/news/item/17-11-2026-leaders-commit-to-accelerate-action-on-obesity-prevention-and-control","title":"Leaders commit to accelerate action on obesity prevention and control","published":"2026-11-17T10:00:00+00:00","precision":"day","type":"official","tier":1,"translated":false}],"analysis":[],"independent_sources":1,"signals":{"credibility":{"best_source":"World Health Organization","independent_sources":1,"corroborated":false},"importance":{"rules":56,"model":44,"reasons":["Health (+46)","Affects many people (+6)","Primary/official source (+4)"]}},"provider":"reviewed"},{"id":"s_669e7f37ec","headline":"Rediff refiles for ₹600-crore IPO; Urban Company opens ₹2,500-crore QIP","summary":"Rediff has filed updated draft papers with SEBI for a ₹600 crore IPO made up entirely of new shares, while Urban Company opened a ₹2,500 crore qualified institutional placement, according to two startup-market trackers. AI software startup Dreamteam raised $53 million from Together Fund, Accel and Premji Invest.","why":"Listings and follow-on fundraises show whether public markets remain open to Indian tech companies.","category":"Startups","subcategory":"Funding & IPOs","topics":["india","ipo","markets","startups","venture"],"regions":["India"],"status":"confirmed","limited":false,"limited_reason":"","importance":34.0,"credibility":64.0,"freshness":45.5,"practical":35.0,"label":"Notable","breaking":false,"freshness_label":"New development","first_seen":"2026-11-17T13:00:00+00:00","last_updated":"2026-11-18T08:00:00+00:00","explainer":{"what":"Rediff's refiled DRHP is a fresh issue only, with no offer for sale. Urban Company's QIP targets institutional investors.","why":"Fresh-issue IPOs bring new money into the company rather than paying out existing shareholders.","before":"","who":"Startup founders, early investors and IPO investors.","next":"SEBI's observations on the refiled papers come next."},"claims":[{"text":"Rediff refiled for a ₹600 crore IPO","kind":"reported","source":"StartupTalky; IndiaIPO"}],"timeline":[],"check":{},"sources":[{"publisher":"IndiaIPO","source_id":"indiaipo","url":"https://www.indiaipo.in/daily-reporter/india-ipo-daily-market-ipo-updates-18th-november-2026","title":"India IPO Daily Market & IPO Updates | 18th November 2026","published":"2026-11-18T08:00:00+00:00","precision":"day","type":"report","tier":3,"translated":false},{"publisher":"StartupTalky","source_id":"startuptalky","url":"https://startuptalky.com/news/daily-indian-funding-roundup-key-news-17-november-2026/","title":"Daily Indian Funding Roundup & Key News - 17 November 2026: Dreamteam Raises $53 Million, Urban Company Opens ₹2,500 Crore QIP","published":"2026-11-17T13:00:00+00:00","precision":"day","type":"report","tier":3,"translated":false}],"analysis":[],"independent_sources":2,"signals":{"credibility":{"best_source":"IndiaIPO","independent_sources":2,"corroborated":true},"importance":{"rules":30,"model":40,"reasons":["Capital-markets deal (+36)","Large sums involved (+6)","Covered by 2 independent newsrooms (+3)","Routine update (-15)"]}},"provider":"reviewed"}],"rejected":[{"title":"Iran War Executive Update — November 18, 2026","publisher":"williamusher.substack.com","url":"https://williamusher.substack.com/p/iran-war-executive-update-november-ca7","stage":"source","reason":"Blocked domain (blog, newsletter or aggregator)"},{"title":"Sensex Falls 500 Pts; Nifty Slips Below 25,250 on Profit Booking","publisher":"HDFC Sky","url":"https://hdfcsky.com/news/market-close-report-today-november-18-2026-nifty-sensex-decline-after-recent-rally-as-profit-booking-sets-in","stage":"source","reason":"HDFC Sky publishes brokerage/marketing content, not news reporting"},{"title":"Closing Bell, 18 November 2026: Sensex and Nifty Fall as Profit Booking, Metal Stocks Weigh","publisher":"Kotak Neo","url":"https://www.kotakneo.com/news/market-news/market-wrap-18-november-2026-profit-booking-and-a-drag-in-metal-stocks-pull-benchmarks-down/","stage":"source","reason":"Kotak Neo publishes brokerage/marketing content, not news reporting"},{"title":"Delhi's air quality drops to poor category with AQI at 289","publisher":"socialnews.xyz","url":"https://www.socialnews.xyz/2026/11/18/delhis-air-quality-drops-to-poor-category-with-aqi-at-289/","stage":"source","reason":"Blocked domain (blog, newsletter or aggregator)"},{"title":"French Presidency announces Paris Call for AI Safety and Security","publisher":"af.net","url":"https://af.net/realtime/page/263/?news_page=41","stage":"source","reason":"Blocked domain (blog, newsletter or aggregator)"},{"title":"Trump said to privately vent at Vance for blaming GOP's shellacking in midterms on Iran war","publisher":"The Times of Israel","url":"https://www.timesofisrael.com/liveblog-november-18-2026/","stage":"quality","reason":"Too trivial to take your attention (importance 25)","articles":1},{"title":"Stock Market Close: Sensex sheds 500 pts, Nifty at 25,228; consumer durables top sectoral loser","publisher":"Business Standard","url":"https://www.business-standard.com/amp/markets/news/stock-market-live-november-18-nse-bse-sensex-today-nifty50-gift-nifty-crude-oil-prices-bond-yields-hero-motocorp-share-price-hcltech-stock-price-today-ipo-today-126111800134_1.html","stage":"quality","reason":"Too trivial to take your attention (importance 25)","articles":1},{"title":"Stock Market Highlights: Sensex ends 446 pts up; Nifty at 26,192; Financial, O&G shares gain","publisher":"Business Standard","url":"https://www.business-standard.com/markets/news/stock-market-live-updates-november-20-nse-bse-sensex-today-nifty-gift-nifty-india-us-deal-nvidia-results-ipo-125112000062_1.html","stage":"freshness","reason":"Old news: last reported 364 days ago","articles":1},{"title":"Humyn Labs Raises $47 Mn To Collect Training Data For Robots","publisher":"Inc42","url":"https://inc42.com/","stage":"quality","reason":"Too trivial to take your attention (importance 22)","articles":1},{"title":"Press release of Consumer Price Index on base 2024=100 for October, 2026","publisher":"Press Information Bureau","url":"https://www.pib.gov.in/PressReleasePage.aspx?PRID=2335416&reg=48&lang=2","stage":"freshness","reason":"Old news: last reported 7 days ago","articles":2},{"title":"RBI announces premature redemption rate for Sovereign Gold Bonds due November 18","publisher":"ANI","url":"https://www.tribuneindia.com/news/business/rbi-announces-premature-redemption-rate-for-sovereign-gold-bonds-due-november-18","stage":"quality","reason":"Too trivial to take your attention (importance 19)","articles":1},{"title":"CAT 2026 admit card @ iimcat.ac.in, IIM Indore to release hall ticket today, November 4","publisher":"Business Standard","url":"https://www.business-standard.com/amp/education/news/cat-2026-admit-card-iim-indore-to-release-hall-ticket-today-at-website-nc-126110400554_1.html","stage":"freshness","reason":"Old news: last reported 15 days ago","articles":1}]}</script>
+<script>
+"use strict";
+/* ---------- data + storage ---------- */
+const SNAP = JSON.parse(document.getElementById("snapshot").textContent);
+const API = !SNAP;
+const KEY = "sift.v1";
+const PUBLIC_URL = "";   // set at build time for the snapshot; the server uses its own address
+const DEFAULT_PREFS = { interests: ["World affairs", "India", "Economy", "Finance", "Artificial Intelligence"], priority: [], excluded: [],
+  regions: ["India", "World"], alerts: "major", personal: 0.75, followed: [], hiddenSources: [], hiddenStories: [],
+  saved: [], feedback: [], reports: [], lastSeen: null, onboarded: false, coached: false, read: [], theme: null,
+  digests: [{ slot: "morning", time: "08:00", on: true }, { slot: "afternoon", time: "13:30", on: false }, { slot: "evening", time: "19:00", on: true }],
+  digestChannel: "push", email: "" };
+let P = load();
+if (!P.uid) { P.uid = newId(); persist(); }
+function newId() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  const b = new Uint8Array(16); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(b) : b.forEach((_, i) => b[i] = Math.random() * 256 | 0);
+  return Array.from(b, x => x.toString(16).padStart(2, "0")).join("");
+}
+function U(rest) { return "/api/users/" + P.uid + rest; }
+function load() { try { return Object.assign({}, DEFAULT_PREFS, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { return Object.assign({}, DEFAULT_PREFS); } }
+function persist() { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) { /* storage unavailable: keep in memory */ } }
+function api(path, opts) { if (!API) return Promise.resolve(null); return fetch(path, Object.assign({ headers: { "content-type": "application/json" } }, opts)).catch(() => null); }
+
+let B = null;            // bundle: stories, stats, weights, settings
+let tab = "feed", filter = null;
+const TOPIC = { "central-banks": "Central banks", "drug-regulation": "Drug regulation", "public-health": "Public health", ai: "AI", us: "United States",
+  ipo: "IPOs", gulf: "Gulf", geopolitics: "Geopolitics", conflict: "Conflict", diplomacy: "Diplomacy", semiconductors: "Chips", earnings: "Earnings",
+  corporate: "Corporate", markets: "Markets", oil: "Oil", energy: "Energy", rates: "Interest rates", inflation: "Inflation", economy: "Economy",
+  courts: "Courts", politics: "Politics", education: "Education", universities: "Universities", research: "Research", climate: "Climate",
+  pollution: "Air pollution", delhi: "Delhi", india: "India", world: "World", health: "Health", startups: "Startups", venture: "Venture capital",
+  technology: "Technology", business: "Business" };
+const tname = t => TOPIC[t] || t.charAt(0).toUpperCase() + t.slice(1);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const IST = { timeZone: "Asia/Kolkata" };
+function when(iso, precision) {
+  const d = new Date(iso);
+  const day = d.toLocaleDateString("en-IN", Object.assign({ day: "numeric", month: "short" }, IST));
+  if (precision === "day") return day;
+  return day + ", " + d.toLocaleTimeString("en-IN", Object.assign({ hour: "2-digit", minute: "2-digit", hour12: false }, IST)) + " IST";
+}
+
+/* ---------- ranking (mirrors newsintel/scoring + feed) ---------- */
+const FEEDBACK_EFFECT = { relevant: 1, more_like_this: 1.5, not_relevant: -1, too_trivial: -0.75, too_repetitive: -0.5 };
+function affinity() {
+  const out = {}, now = Date.now();
+  for (const f of P.feedback) {
+    const e = FEEDBACK_EFFECT[f.kind]; if (!e) continue;
+    const w = 0.08 * e * Math.pow(0.5, (now - f.at) / 864e5 / 14);
+    for (const t of f.topics) out[t] = (out[t] || 0) + w;
+  }
+  for (const t in out) out[t] = Math.max(-0.35, Math.min(0.35, out[t]));
+  return out;
+}
+function relevance(s, aff) {
+  const topics = new Set(s.topics), why = [];
+  if (P.excluded.some(t => topics.has(t))) return [0, ["Matches a topic you excluded"]];
+  let best = 0;
+  for (const i of P.interests) {
+    const ov = (B.interests[i] || []).filter(t => topics.has(t)).length;
+    if (!ov) continue;
+    let st = 55 + 15 * Math.min(ov, 3);
+    if (P.priority.includes(i)) { st *= 1.25; why.push("Priority interest: " + i); } else why.push("You follow " + i);
+    best = Math.max(best, st);
+  }
+  const regions = new Set(s.regions && s.regions.length ? s.regions : ["World"]);
+  if (topics.has("india")) regions.add("India");
+  const rm = P.regions.filter(r => regions.has(r));
+  if (rm.length) { best += 10; why.push("In a region you chose: " + rm.join(", ")); }
+  let learned = s.topics.reduce((a, t) => a + (aff[t] || 0), 0);
+  learned = Math.max(-0.35, Math.min(0.35, learned));
+  if (Math.abs(learned) > 0.02) { best *= 1 + learned; why.push(learned > 0 ? "Adjusted by your feedback" : "Down-weighted by your feedback"); }
+  if (P.followed.some(t => topics.has(t))) { best += 10; why.push("A topic you follow"); }
+  return [Math.round(Math.max(0, Math.min(100, best)) * 10) / 10, why];
+}
+function scored() {
+  const aff = affinity(), w = B.weights;
+  return B.stories.filter(s => !P.hiddenStories.includes(s.id) && !s.sources.every(a => P.hiddenSources.includes(a.source_id)))
+    .map(s => {
+      const [rel, why] = relevance(s, aff);
+      const parts = { importance: s.importance, relevance: rel, credibility: s.credibility, freshness: s.freshness, practical: s.practical };
+      const score = Object.keys(parts).reduce((a, k) => a + w[k] * parts[k], 0);
+      return { s, rel, why, parts, score: Math.round(score * 10) / 10 };
+    }).sort((a, b) => b.score - a.score);
+}
+function yourFeed() {
+  const cfg = B.feed_settings, ranked = scored().filter(r => r.score >= cfg.min_total_score);
+  const n = Math.min(cfg.max_items, ranked.length), nGlobal = Math.round(n * (1 - P.personal));
+  const picked = [], ids = new Set();
+  ranked.filter(r => r.s.importance >= cfg.global_importance_floor && !P.excluded.some(t => r.s.topics.includes(t))).sort((a, b) => b.s.importance - a.s.importance)
+    .slice(0, nGlobal).forEach(r => { picked.push(Object.assign({ slot: "global" }, r)); ids.add(r.s.id); });
+  for (const r of ranked) { if (picked.length >= n) break; if (r.rel >= cfg.relevance_floor && !ids.has(r.s.id)) { picked.push(Object.assign({ slot: "personal" }, r)); ids.add(r.s.id); } }
+  return picked.sort((a, b) => b.score - a.score);
+}
+function important() {
+  const all = scored();
+  return all.filter(r => r.s.importance >= B.feed_settings.global_importance_floor).sort((a, b) => b.s.importance - a.s.importance).map(r => Object.assign({ slot: "global" }, r));
+}
+function catchUp() {
+  const now = new Date(B.generated_at).getTime();
+  const since = P.lastSeen && P.lastSeen < now ? P.lastSeen : now - 24 * 3600e3;
+  const rows = scored(), fresh = rows.filter(r => new Date(r.s.last_updated).getTime() >= since);
+  const top = fresh.slice().sort((a, b) => b.s.importance - a.s.importance).slice(0, 3);
+  const worth = fresh.filter(r => !top.includes(r)).slice(0, 2);
+  const used = new Set(top.concat(worth).map(r => r.s.id));
+  const watch = rows.filter(r => r.s.status === "developing" && !used.has(r.s.id) && new Date(r.s.last_updated).getTime() >= now - 72 * 3600e3)
+    .sort((a, b) => b.s.importance - a.s.importance).slice(0, 1);
+  return { since, top, worth, watch, skipped: Math.max(0, fresh.length - top.length - worth.length - watch.length) };
+}
+
+/* ---------- icons ---------- */
+const I = {
+  explain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4V14M12 17.2v.1"/></svg>',
+  save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v16l-6-4-6 4z"/></svg>',
+  saved: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v16l-6-4-6 4z"/></svg>',
+  share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 15 20 4M14 4h6v6M20 14v6H4V4h6"/></svg>',
+  out: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17 17 7M9 7h8v8"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>',
+  follow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>',
+  hide: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 9 6 9 6a15 15 0 0 1-3 3.5M6.2 7.6C4 9.2 3 12 3 12s4 6 9 6c1.4 0 2.7-.4 3.8-1"/></svg>',
+  src: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11l3 3v13H5z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>',
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V4h12l-2 4 2 4H5"/></svg>'
+};
+
+/* ---------- rendering ---------- */
+const view = document.getElementById("view");
+function labelHTML(s) {
+  if (s.breaking) return '<span class="lab lab-breaking">Breaking · ' + esc(s.status === "developing" ? "Developing" : s.label) + '</span>';
+  const cls = { Major: "lab-major", Significant: "lab-significant" }[s.label] || "";
+  return '<span class="lab ' + cls + '">' + esc(s.label) + (s.status === "developing" ? " · Developing" : "") + '</span>';
+}
+function sourcesLine(s) {
+  const pubs = [...new Set(s.sources.map(a => a.publisher))];
+  const latest = s.sources.reduce((a, b) => (new Date(b.published) > new Date(a.published) ? b : a));
+  const names = pubs.slice(0, 2).map(p => "<strong>" + esc(p) + "</strong>").join(", ");
+  const more = pubs.length > 2 ? " and " + (pubs.length - 2) + " more" : "";
+  const n = s.independent_sources;
+  return names + more + ' · <span>' + esc(when(latest.published, latest.precision)) + '</span> · <span>' + (n > 1 ? n + " independent sources" : "single source") + '</span>';
+}
+function cardHTML(r, i, total) {
+  const s = r.s, saved = P.saved.includes(s.id);
+  const lead = s.sources[0];
+  const cat = [s.category, s.subcategory].filter(Boolean).join(" · ");
+  const list = s.sources.map(a => '<li><a href="' + esc(a.url) + '" target="_blank" rel="noopener"><span class="p">' + esc(a.publisher) +
+      (a.type === "official" ? '<span class="tag">Primary</span>' : a.type === "explainer" ? '<span class="tag">Explainer</span>' : "") +
+      '</span><span class="t">' + esc(when(a.published, a.precision)) + '</span><span class="h">' + esc(a.title) + (a.translated ? " (title translated)" : "") + '</span></a></li>').join("") +
+    s.analysis.map(a => '<li><a href="' + esc(a.url) + '" target="_blank" rel="noopener"><span class="p">' + esc(a.publisher) + '<span class="tag op">' + (a.type === "opinion" ? "Opinion" : "Analysis") +
+      '</span></span><span class="t">' + esc(when(a.published, a.precision)) + '</span><span class="h">' + esc(a.title) + ' — not used as a source of facts</span></a></li>').join("");
+  return '<article class="card" data-id="' + s.id + '" aria-label="' + esc(s.headline) + '">' +
+    '<div class="kicker"><span class="idx">' + String(i + 1).padStart(2, "0") + "/" + String(total).padStart(2, "0") + '</span>' + labelHTML(s) + '</div>' +
+    '<div class="cat">' + esc(cat) + '</div>' +
+    '<h2 class="hl">' + esc(s.headline) + '</h2>' +
+    '<p class="sum">' + esc(s.summary) + '</p>' +
+    (s.limited ? '<div class="limited"><b>Limited summary.</b> ' + esc(s.limited_reason) + '</div>' : "") +
+    (s.why ? '<div class="why"><span class="why-k">Why it matters</span><p>' + esc(s.why) + '</p></div>' : "") +
+    '<button class="srcbtn" aria-expanded="false" data-act="sources"><span class="chev">›</span><span>' + sourcesLine(s) + '</span></button>' +
+    '<ul class="srclist" hidden>' + list + '</ul>' +
+    '<div class="actions">' +
+      '<button class="act primary" data-act="explain">' + I.explain + '<span>Explain</span></button>' +
+      '<button class="act' + (saved ? " on" : "") + '" data-act="save" aria-pressed="' + saved + '">' + (saved ? I.saved : I.save) + '<span>' + (saved ? "Saved" : "Save") + '</span></button>' +
+      '<button class="act" data-act="share">' + I.share + '<span>Share</span></button>' +
+      '<a class="act" href="' + esc(lead.url) + '" target="_blank" rel="noopener">' + I.out + '<span>Original</span></a>' +
+      '<button class="act more" data-act="more" aria-label="More options and feedback">' + I.more + '</button>' +
+    '</div></article>';
+}
+/* ---------- deck ---------- */
+let deck = { key: "", rows: [], i: 0, history: [] };
+let listMode = false;
+const IC = {
+  undo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>',
+  no: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  yes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5 10 17 19 7"/></svg>',
+  flip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
+  list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>',
+  cards: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M2 7v10M22 7v10"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12v18l-6-4.2L6 21z"/></svg>'
+};
+function rowsFor(t) {
+  if (filter) return scored().filter(r => r.s.sources.some(a => a.publisher === filter));
+  if (t === "feed") return yourFeed();
+  if (t === "important") return important();
+  if (t === "breaking") return scored().filter(r => r.s.breaking).map(r => Object.assign({ slot: "global" }, r));
+  return scored().filter(r => P.saved.includes(r.s.id));
+}
+function readMinutes(rows) { return Math.max(1, Math.round(rows.reduce((a, r) => a + (r.s.summary + " " + r.s.why).split(/\s+/).length, 0) / 220)); }
+function frontHTML(r, i, total) {
+  const s = r.s, cat = [s.category, s.subcategory].filter(Boolean).join(" · ");
+  return '<div class="kicker"><span class="idx">' + String(i + 1).padStart(2, "0") + "/" + String(total).padStart(2, "0") + '</span>' + labelHTML(s) + '</div>' +
+    '<div class="cat">' + esc(cat) + '</div><h2 class="hl">' + esc(s.headline) + '</h2><p class="sum">' + esc(s.summary) + '</p>' +
+    (s.limited ? '<div class="limited"><b>Limited summary.</b> ' + esc(s.limited_reason) + '</div>' : "") +
+    '<div class="face-foot"><div class="srcbtn">' + sourcesLine(s) + '</div><div class="hint">' + IC.flip.replace('<svg', '<svg width="13" height="13"') + ' Tap to flip · what happened, why, what next</div></div>';
+}
+function backHTML(r) {
+  const s = r.s, e = s.explainer || {}, refDay = new Date(B.generated_at);
+  const sec = (k, v, note) => v ? '<div class="bsec"><h4>' + k + '</h4><p>' + esc(v) + '</p>' + (note ? '<p class="note">' + note + '</p>' : "") + '</div>' : "";
+  const claims = s.claims.length ? '<div class="bsec"><h4>Confirmed or not?</h4><ul class="claims">' + s.claims.map(c =>
+    '<li><span class="kind k-' + c.kind + '">' + (KIND[c.kind] || c.kind) + '</span><span>' + esc(c.text) + (c.source ? '<span class="src">' + esc(c.source) + '</span>' : "") + '</span></li>').join("") + '</ul></div>' : "";
+  const tl = s.timeline.length ? '<div class="bsec"><h4>Timeline</h4><ol class="tl">' + s.timeline.map(t => {
+    const future = new Date(t.at) > refDay;
+    return '<li class="' + (future ? "future" : "") + '"><time>' + esc(when(t.at + "T06:00:00Z", "day")) + (future ? " · scheduled" : "") + '</time>' + esc(t.text) + (t.source ? ' <span class="src">— ' + esc(t.source) + '</span>' : "") + '</li>';
+  }).join("") + '</ol></div>' : "";
+  const srcs = '<div class="bsec"><h4>Sources · ' + s.independent_sources + ' independent</h4><ul class="srclist">' + s.sources.map(a =>
+    '<li><a href="' + esc(a.url) + '" target="_blank" rel="noopener"><span class="p">' + esc(a.publisher) + (a.type === "official" ? '<span class="tag">Primary</span>' : "") +
+    '</span><span class="t">' + esc(when(a.published, a.precision)) + '</span><span class="h">' + esc(a.title) + '</span></a></li>').join("") +
+    s.analysis.map(a => '<li><a href="' + esc(a.url) + '" target="_blank" rel="noopener"><span class="p">' + esc(a.publisher) + '<span class="tag op">' + (a.type === "opinion" ? "Opinion" : "Analysis") +
+    '</span></span><span class="t">' + esc(when(a.published, a.precision)) + '</span><span class="h">' + esc(a.title) + ' (not used as a source of facts)</span></a></li>').join("") + '</ul></div>';
+  return '<div class="kicker"><span class="lab lab-major">Explained</span><span class="hint" style="margin-left:auto">' + IC.flip.replace('<svg', '<svg width="13" height="13"') + ' Tap to flip back</span></div>' +
+    '<h3 class="bh">' + esc(s.headline) + '</h3>' +
+    sec("What happened", e.what || s.summary) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
+    sec("Who is affected, and how", e.who) + sec("What could happen next", e.next, "Scheduled events and reported plans only. We do not make predictions.") +
+    claims + tl + srcs;
+}
+function render() {
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.tab === tab && !filter)));
+  document.getElementById("nBreaking").textContent = B.stories.filter(s => s.breaking).length || "";
+  document.getElementById("nSaved").textContent = P.saved.length || "";
+  const rows = rowsFor(tab), key = tab + "|" + (filter || "") + "|" + rows.map(r => r.s.id).join(",");
+  if (key !== deck.key) {
+    // keep position when only ranking inputs changed; otherwise start over
+    const sameTab = deck.key.split("|").slice(0, 2).join("|") === tab + "|" + (filter || "");
+    const seen = sameTab ? new Set(deck.rows.slice(0, deck.i).map(r => r.s.id)) : new Set();
+    const keepSeen = rows.filter(r => seen.has(r.s.id)), rest = rows.filter(r => !seen.has(r.s.id));
+    deck = { key, rows: keepSeen.concat(rest), i: keepSeen.length, history: sameTab ? deck.history : [] };
+  }
+  view.classList.toggle("listmode", listMode);
+  if (listMode) return renderList(rows);
+  drawDeck();
+}
+function renderList(rows) {
+  const head = filter ? '<div class="filterbar"><span>From <b>' + esc(filter) + '</b></span><button id="clearFilter">Back</button></div>' : "";
+  view.innerHTML = head + '<div class="filterbar"><span>List view</span><button id="toDeck">Back to cards</button></div>' + rows.map((r, i) => cardHTML(r, i, rows.length)).join("") +
+    '<div class="end"><b>That is everything that cleared the bar.</b></div>';
+  view._rows = rows; view.scrollTop = 0;
+  document.getElementById("toDeck").onclick = () => { listMode = false; render(); };
+  const cf = document.getElementById("clearFilter"); if (cf) cf.onclick = () => { filter = null; render(); };
+}
+function drawDeck() {
+  const rows = deck.rows, i = deck.i, n = rows.length;
+  const left = rows.slice(i);
+  const mins = readMinutes(left);
+  let html = (filter ? '<div class="filterbar"><span>From <b>' + esc(filter) + '</b></span><button id="clearFilter">Back to feed</button></div>' : "") +
+    '<div class="progress">' + rows.map((_, k) => '<i class="' + (k < i ? "done" : k === i ? "now" : "") + '"></i>').join("") + '</div>' +
+    '<div class="deckmeta"><span>' + (i < n ? (i + 1) + " of " + n : "Done") + '</span><span>' + (i < n ? "≈ " + mins + " min left" : "") + '</span></div><div class="deck" id="deck">';
+  if (i >= n) html += doneHTML(); else {
+    for (let d = Math.min(3, n - i - 1); d >= 0; d--) {
+      const r = rows[i + d];
+      html += '<div class="card" data-id="' + r.s.id + '" data-depth="' + d + '"' + (d ? ' aria-hidden="true"' : ' tabindex="0" aria-label="' + esc(r.s.headline) + '. Press space to flip, right arrow got it, left arrow not for me."') + '>' +
+        (d === 0 ? '<span class="stamp yes">Got it</span><span class="stamp no">Not for me</span>' : "") +
+        '<div class="flip"><section class="face front">' + frontHTML(r, i + d, n) + '</section>' +
+        (d === 0 ? '<section class="face back">' + backHTML(r) + '</section>' : "") + '</div></div>';
+    }
+  }
+  html += '</div>';
+  if (i < n) {
+    const s = rows[i].s, saved = P.saved.includes(s.id), canBack = deck.history.length > 0 || i > 0;
+    html += '<div class="swipehint" aria-hidden="true"><span>← Not for me</span><span>Swipe</span><span>Got it →</span></div>' +
+      '<div class="ctlbar">' +
+      '<button class="cb" data-c="back"' + (canBack ? "" : " disabled") + '>' + IC.undo + '<span>Back</span></button>' +
+      '<button class="cb' + (saved ? " on" : "") + '" data-c="save" aria-pressed="' + saved + '">' + (saved ? I.saved : I.save) + '<span>' + (saved ? "Saved" : "Save") + '</span></button>' +
+      '<button class="cb" data-c="share">' + I.share + '<span>Share</span></button>' +
+      '<a class="cb" href="' + esc(s.sources[0].url) + '" target="_blank" rel="noopener">' + I.out + '<span>Original</span></a>' +
+      '<button class="cb" data-c="more" aria-label="Why am I seeing this, feedback and more">' + I.more + '<span>More</span></button></div>';
+  }
+  view.innerHTML = html;
+  view._rows = rows;
+  const cf = document.getElementById("clearFilter"); if (cf) cf.onclick = () => { filter = null; render(); };
+  const top = view.querySelector('.card[data-depth="0"]');
+  if (top) bindCard(top);
+  if (i >= n) bindDone();
+}
+function findRow(id) { return (view._rows || []).find(r => r.s.id === id) || scored().find(r => r.s.id === id); }
+function buzz(ms) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) { /* not supported */ } }
+
+/* swipe / tap / double-tap: touch events on phones, pointer events for mouse and pen */
+function bindCard(card) {
+  let x0 = 0, y0 = 0, dx = 0, dy = 0, t0 = 0, down = false, drag = false, scrolling = false, lastTap = 0, tapT = null;
+  const yes = card.querySelector(".stamp.yes"), no = card.querySelector(".stamp.no");
+  const start = (x, y, target) => { if (target.closest("a,button")) return false; down = true; drag = scrolling = false; x0 = x; y0 = y; dx = dy = 0; t0 = Date.now(); return true; };
+  const move = (x, y) => {
+    if (!down) return false;
+    dx = x - x0; dy = y - y0;
+    if (!drag && !scrolling) {
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) { drag = true; card.classList.add("dragging"); }
+      else if (Math.abs(dy) > 10) scrolling = true;   // let the card's text scroll vertically
+    }
+    if (!drag) return false;
+    card.style.transform = "translateX(" + dx + "px) rotate(" + dx / 18 + "deg)";
+    yes.style.opacity = Math.max(0, Math.min(1, dx / 90)); no.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+    return true;
+  };
+  const end = () => {
+    if (!down) return; down = false;
+    if (drag) {
+      drag = false; card.classList.remove("dragging");
+      const fast = Math.abs(dx) / Math.max(1, Date.now() - t0) > 0.5 && Math.abs(dx) > 40;  // a quick flick counts too
+      if (dx > 80 || (fast && dx > 0)) return swipe("yes");
+      if (dx < -80 || (fast && dx < 0)) return swipe("no");
+      card.style.transform = ""; yes.style.opacity = no.style.opacity = 0; return;
+    }
+    if (scrolling || Math.abs(dx) > 8 || Math.abs(dy) > 8) return;
+    const now = Date.now();
+    if (now - lastTap < 300) { clearTimeout(tapT); lastTap = 0; doubleTap(card); return; }
+    lastTap = now; tapT = setTimeout(() => flip(card), 300);
+  };
+  const cancel = () => { if (drag && Math.abs(dx) > 80) return end(); down = drag = false; card.classList.remove("dragging"); card.style.transform = ""; yes.style.opacity = no.style.opacity = 0; };
+  card.addEventListener("touchstart", e => { if (e.touches.length === 1) start(e.touches[0].clientX, e.touches[0].clientY, e.target); }, { passive: true });
+  card.addEventListener("touchmove", e => { if (move(e.touches[0].clientX, e.touches[0].clientY)) e.preventDefault(); }, { passive: false });
+  card.addEventListener("touchend", e => { end(); if (e.cancelable) e.preventDefault(); });
+  card.addEventListener("touchcancel", cancel);
+  card.addEventListener("pointerdown", e => { if (e.pointerType === "touch") return; if (start(e.clientX, e.clientY, e.target)) try { card.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } });
+  card.addEventListener("pointermove", e => { if (e.pointerType !== "touch") move(e.clientX, e.clientY); });
+  card.addEventListener("pointerup", e => { if (e.pointerType !== "touch") end(); });
+  card.addEventListener("pointercancel", e => { if (e.pointerType !== "touch") cancel(); });
+  card.focus({ preventScroll: true });
+}
+function flip(card) {
+  card.classList.toggle("flipped");
+  const f = card.querySelector(card.classList.contains("flipped") ? ".face.back" : ".face.front"); if (f) f.scrollTop = 0;
+}
+function doubleTap(card) {
+  const s = deck.rows[deck.i].s;
+  if (!P.saved.includes(s.id)) { P.saved = P.saved.concat(s.id); persist(); api(U("/saved/" + s.id + "?saved=true"), { method: "PUT" }); }
+  const h = document.createElement("div"); h.className = "heart"; h.innerHTML = IC.heart; card.appendChild(h); setTimeout(() => h.remove(), 850);
+  buzz(15); toast("Saved for later");
+  const b = view.querySelector('[data-c="save"]'); if (b) { b.classList.add("on"); b.innerHTML = I.saved + "<span>Saved</span>"; }
+  document.getElementById("nSaved").textContent = P.saved.length || "";
+}
+function swipe(dir) {
+  const card = view.querySelector('.card[data-depth="0"]'); if (!card) return;
+  const r = deck.rows[deck.i];
+  let ev = null;
+  if (dir === "no") { ev = { id: r.s.id, kind: "not_relevant", topics: r.s.topics, at: Date.now() }; P.feedback.push(ev); persist();
+    api(U("/feedback"), { method: "POST", body: JSON.stringify({ story_id: r.s.id, kind: "not_relevant" }) }); }
+  P.read = [...new Set((P.read || []).concat(r.s.id))]; persist();
+  deck.history.push({ i: deck.i, ev });
+  buzz(10);
+  card.classList.remove("dragging");
+  card.style.transform = "translateX(" + (dir === "yes" ? 140 : -140) + "%) rotate(" + (dir === "yes" ? 18 : -18) + "deg)"; card.style.opacity = "0";
+  const stamp = card.querySelector(".stamp." + dir); if (stamp) stamp.style.opacity = 1;
+  view.querySelectorAll('.card:not([data-depth="0"])').forEach(c => c.dataset.depth = String(c.dataset.depth - 1));
+  setTimeout(() => { deck.i++; drawDeck(); }, 260);
+  if (dir === "no") toast("Fewer stories like this, gradually", () => undo());
+}
+function goBack() {
+  const h = deck.history.pop();
+  if (h) {
+    if (h.ev) { P.feedback = P.feedback.filter(f => f !== h.ev); persist(); api(U("/feedback/" + deck.rows[h.i].s.id), { method: "DELETE" }); }
+    deck.i = h.i;
+  } else if (deck.i > 0) deck.i--;
+  else return;
+  drawDeck();
+}
+const undo = goBack;
+function storyLink(s) {
+  const slug = s.id.replace("_", "-");                     // hash routes allow letters, digits and hyphens
+  if (API) return location.origin + "/s/" + slug;          // server page with a WhatsApp/LinkedIn preview card
+  if (PUBLIC_URL) return PUBLIC_URL + "#" + slug;
+  // self-hosted snapshot (e.g. Netlify): share this page's own address
+  return /^https?:$/.test(location.protocol) ? location.href.split("#")[0] + "#" + slug : "";
+}
+function share(s) {
+  const link = storyLink(s), orig = s.sources[0];
+  const enc = encodeURIComponent;
+  const credit = "Source: " + orig.publisher + (s.independent_sources > 1 ? " + " + (s.independent_sources - 1) + " more" : "");
+  const mk = useSift => {
+    const url = useSift && link ? link : orig.url;
+    const text = useSift && link ? s.headline + "\n" + credit + " · summarised on Sift" : s.headline + " (" + orig.publisher + ")";
+    return { url, text, full: text + "\n" + url };
+  };
+  const native = typeof navigator.share === "function";
+  const grid = m => (native ? '<button class="shr" data-native>' + I.share + '<span>More apps</span></button>' : "") +
+    '<a class="shr" href="https://wa.me/?text=' + enc(m.full) + '" target="_blank" rel="noopener"><b style="background:#25D366">W</b><span>WhatsApp</span></a>' +
+    '<a class="shr" href="https://t.me/share/url?url=' + enc(m.url) + '&text=' + enc(m.text) + '" target="_blank" rel="noopener"><b style="background:#2AABEE">T</b><span>Telegram</span></a>' +
+    '<a class="shr" href="https://www.linkedin.com/sharing/share-offsite/?url=' + enc(m.url) + '" target="_blank" rel="noopener"><b style="background:#0A66C2">in</b><span>LinkedIn</span></a>' +
+    '<a class="shr" href="https://x.com/intent/post?text=' + enc(m.text) + '&url=' + enc(m.url) + '" target="_blank" rel="noopener"><b style="background:#111">X</b><span>X</span></a>';
+  openSheet("Share this story",
+    '<div class="sec"><p style="font:600 17px/1.3 var(--display);margin-bottom:6px">' + esc(s.headline) + '</p>' +
+      '<p class="note" style="margin:0">' + (link ? "Friends open this story in Sift: the summary, why it matters, and links to all " + s.sources.length + " original reports." :
+      "This prototype has no public link yet, so the original report is shared instead.") + '</p></div>' +
+    (link ? '<div class="sec"><div class="seg" id="shWhat"><button data-w="sift" aria-pressed="true">Sift story</button><button data-w="orig" aria-pressed="false">Original article</button></div></div>' : "") +
+    '<div class="sec sharegrid" id="shGrid"></div>' +
+    '<div class="sec"><label for="shUrl" class="note" style="display:block;margin:0 0 6px">Or copy the link</label><div style="display:flex;gap:8px"><input id="shUrl" readonly style="flex:1;min-width:0;border:1px solid var(--rule);border-radius:8px;padding:9px;font:13px var(--mono);background:var(--paper);color:var(--ink)"><button class="btn" id="shCopy" style="width:auto;padding:0 16px">Copy</button></div></div>',
+    body => {
+      let m;
+      const set = useSift => {
+        m = mk(useSift); body.querySelector("#shGrid").innerHTML = grid(m); body.querySelector("#shUrl").value = m.url;
+        const nb = body.querySelector("[data-native]"); if (nb) nb.onclick = () => navigator.share({ title: s.headline, text: m.text, url: m.url }).catch(() => {});
+      };
+      set(true);
+      body.querySelectorAll("[data-w]").forEach(b => b.onclick = () => { body.querySelectorAll("[data-w]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); set(b.dataset.w === "sift"); });
+      body.querySelector("#shCopy").onclick = () => {
+        body.querySelector("#shUrl").select();
+        try { navigator.clipboard.writeText(m.full).then(() => toast("Link copied"), () => toast("Select the link above and copy it")); }
+        catch (err) { toast("Select the link above and copy it"); }
+      };
+    });
+}
+/* deep links: /s/<id> on the server, #s-<id> in the snapshot, open that story first */
+function openSharedStory() {
+  const m = (location.pathname.match(/\/s\/(s-[0-9a-f]+)/) || location.hash.match(/^#(s-[0-9a-f]+)$/) || [])[1];
+  if (!m) return false;
+  const id = m.replace("-", "_"), row = scored().find(r => r.s.id === id);
+  if (!row) { toast("That story is no longer in the feed"); return false; }
+  filter = null; tab = "feed"; render();
+  deck.rows = [row].concat(deck.rows.filter(r => r.s.id !== id)); deck.i = 0; deck.history = []; deck.key = "shared"; drawDeck();
+  toast("Shared with you · tap the card for the full explainer");
+  return true;
+}
+
+/* end of deck: summary + quick check */
+let quiz = null;
+function doneHTML() {
+  const rows = deck.rows, st = B.stats, words = rows.reduce((a, r) => a + r.s.summary.split(/\s+/).length, 0);
+  const pool = rows.filter(r => r.s.check && r.s.check.q);
+  quiz = { qs: pool.slice(0, 3), k: 0, score: 0, answered: false };
+  const tabName = { feed: "your briefing", important: "what's important", breaking: "breaking news", saved: "your saved stories" }[tab];
+  return '<div class="finish"><div class="hint">Finished ' + esc(filter ? "stories from " + filter : tabName) + '</div>' +
+    '<h2>You are up to date.</h2>' +
+    '<div class="statrow"><div class="stat"><b>' + rows.length + '</b><span>stories</span></div><div class="stat"><b>' + st.articles_scanned + '</b><span>reports behind them</span></div>' +
+    '<div class="stat"><b>' + Math.max(1, Math.round(words / 220)) + '<small style="font-size:14px"> min</small></b><span>reading time</span></div></div>' +
+    (quiz.qs.length ? '<div class="quiz" id="quiz"></div>' : "") +
+    '<div class="btnrow"><button class="btn ghost" id="again">Go through again</button><button class="btn" id="cuFromDone">Catch me up</button></div>' +
+    '<button class="linkbtn" id="toList" style="text-align:center">Browse as a list instead</button></div>';
+}
+function drawQuiz() {
+  const el = document.getElementById("quiz"); if (!el) return;
+  const q = quiz.qs[quiz.k];
+  if (!q) {
+    el.innerHTML = '<div class="qn">Quick check · done</div><p class="q">' + quiz.score + ' of ' + quiz.qs.length + ' right. ' +
+      (quiz.score === quiz.qs.length ? "Sharp." : quiz.score ? "Good enough to hold a conversation." : "Flip the cards again for the key facts.") + '</p>';
+    return;
+  }
+  const c = q.s.check;
+  el.innerHTML = '<div class="qn">Quick check · ' + (quiz.k + 1) + ' of ' + quiz.qs.length + '</div><p class="q">' + esc(c.q) + '</p>' +
+    c.options.map((o, j) => '<button class="opt" data-j="' + j + '">' + esc(o) + '</button>').join("") + '<div class="qsrc" id="qsrc"></div>';
+  el.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const j = +b.dataset.j, ok = j === c.answer;
+    if (ok) quiz.score++;
+    el.querySelectorAll(".opt").forEach((x, k) => { x.disabled = true; if (k === c.answer) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+    buzz(ok ? 12 : [8, 40, 8]);
+    document.getElementById("qsrc").innerHTML = (ok ? "Right. " : "Not quite. ") + 'From “' + esc(q.s.headline) + '”. <button class="linkbtn" id="qnext">' + (quiz.k + 1 < quiz.qs.length ? "Next question →" : "See score →") + '</button>';
+    document.getElementById("qnext").onclick = () => { quiz.k++; drawQuiz(); };
+  });
+}
+function bindDone() {
+  drawQuiz();
+  document.getElementById("again").onclick = () => { deck.i = 0; deck.history = []; drawDeck(); };
+  document.getElementById("cuFromDone").onclick = showCatchUp;
+  document.getElementById("toList").onclick = () => { listMode = true; render(); };
+}
+
+/* ---------- catch me up: stories ---------- */
+function showCatchUp() {
+  const c = catchUp(), slides = [];
+  slides.push({ intro: true, c });
+  c.top.forEach((r, k) => slides.push({ r, label: "Most important · " + (k + 1) + " of 3", num: k + 1 }));
+  c.worth.forEach((r, k) => slides.push({ r, label: "Also worth knowing · " + (k + 1) + " of " + c.worth.length }));
+  c.watch.forEach(r => slides.push({ r, label: "Developing · one to watch" }));
+  slides.push({ outro: true, c });
+  const app = document.getElementById("app"), el = document.createElement("div");
+  el.className = "stories"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Catch me up");
+  el.innerHTML = '<div class="bars">' + slides.map(() => "<i><b></b></i>").join("") + '</div>' +
+    '<div class="top"><span class="t">Catch me up</span><button id="stClose" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
+    '<div id="slideHost" style="flex:1;display:flex"></div><div class="paused" id="paused"></div><div class="tapzones"><div data-z="prev"></div><div data-z="next"></div></div>';
+  app.appendChild(el);
+  const DUR = 7000; let k = 0, t0 = 0, elapsed = 0, paused = false, raf = 0, holdT = null;
+  const bars = el.querySelectorAll(".bars b");
+  function show(n) {
+    k = Math.max(0, Math.min(slides.length - 1, n)); elapsed = 0; t0 = performance.now();
+    bars.forEach((b, j) => b.style.width = j < k ? "100%" : "0");
+    const s = slides[k], since = when(new Date(s.c ? s.c.since : 0).toISOString());
+    let h;
+    if (s.intro) h = '<div class="slide"><div class="sec-l">Since ' + esc(since) + '</div><h2>Six things you missed. Not everything.</h2><p>We skipped ' + s.c.skipped + ' smaller updates so this takes under a minute. Tap the right side to skip ahead, hold to pause.</p></div>';
+    else if (s.outro) h = '<div class="slide"><div class="sec-l">That is it</div><h2>You are caught up.</h2><p>Everything here links back to the original reports. Swipe through your full briefing for the rest.</p><button class="open" data-done>Back to my briefing</button></div>';
+    else h = '<div class="slide">' + (s.num ? '<div class="num">' + s.num + '</div>' : "") + '<div class="sec-l">' + esc(s.label) + '</div><h2>' + esc(s.r.s.headline) + '</h2><p>' + esc(s.r.s.why || s.r.s.summary) + '</p>' +
+      '<div class="src">' + esc([...new Set(s.r.s.sources.map(a => a.publisher))].slice(0, 3).join(" · ")) + '</div><button class="open" data-open-id="' + s.r.s.id + '">Open the full story</button></div>';
+    el.querySelector("#slideHost").innerHTML = h;
+    const o = el.querySelector("[data-open-id]"); if (o) o.onclick = e => { e.stopPropagation(); close(); explain(B.stories.find(x => x.id === o.dataset.openId)); };
+    const d = el.querySelector("[data-done]"); if (d) d.onclick = e => { e.stopPropagation(); P.lastSeen = new Date(B.generated_at).getTime(); persist(); close(); };
+  }
+  function tick(now) {
+    if (!paused) { elapsed = now - t0; const p = Math.min(1, elapsed / DUR); bars[k].style.width = (p * 100) + "%"; if (p >= 1 && k < slides.length - 1) show(k + 1); }
+    else t0 = now - elapsed;
+    raf = requestAnimationFrame(tick);
+  }
+  function close() { cancelAnimationFrame(raf); el.remove(); document.removeEventListener("keydown", key); }
+  function key(e) { if (e.key === "Escape") close(); if (e.key === "ArrowRight") show(k + 1); if (e.key === "ArrowLeft") show(k - 1); if (e.key === " ") { paused = !paused; e.preventDefault(); } }
+  el.querySelectorAll("[data-z]").forEach(z => {
+    z.addEventListener("pointerdown", () => { holdT = setTimeout(() => { paused = true; el.querySelector("#paused").textContent = "Paused"; }, 220); });
+    z.addEventListener("pointerup", () => { clearTimeout(holdT); if (paused && el.querySelector("#paused").textContent) { paused = false; el.querySelector("#paused").textContent = ""; return; } z.dataset.z === "next" ? (k === slides.length - 1 ? close() : show(k + 1)) : show(k - 1); });
+  });
+  el.querySelector("#stClose").onclick = close;
+  document.addEventListener("keydown", key);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  show(0); if (!reduce) raf = requestAnimationFrame(tick); else el.querySelector("#paused").textContent = "Tap the right side to go on";
+}
+
+/* ---------- live updates (server mode only) ---------- */
+let pending = 0;
+function liveUpdates() {
+  if (!API || typeof EventSource !== "function") return;
+  const es = new EventSource("/api/stream");
+  const onEvent = async () => {
+    const fresh = await (await fetch("/api/bundle")).json().catch(() => null); if (!fresh) return;
+    const known = new Set(B.stories.map(s => s.id));
+    pending += fresh.stories.filter(s => !known.has(s.id)).length;
+    // replace data in place: open cards keep their position, developing stories get their new timeline
+    B = fresh; masthead();
+    showPill();
+  };
+  ["new_story", "development", "breaking"].forEach(t => es.addEventListener(t, onEvent));
+}
+function showPill() {
+  let pill = document.getElementById("livePill");
+  if (!pending) { if (pill) pill.remove(); return; }
+  if (!pill) { pill = document.createElement("button"); pill.id = "livePill"; pill.className = "livepill"; view.appendChild(pill);
+    pill.onclick = () => { pending = 0; pill.remove(); const seen = deck.rows.slice(0, deck.i).map(r => r.s.id); deck.key = ""; render();
+      deck.rows = deck.rows.filter(r => !seen.includes(r.s.id)); deck.i = 0; deck.history = []; drawDeck(); }; }
+  pill.textContent = "↑ " + pending + " new " + (pending === 1 ? "story" : "stories") + " · tap to add";
+}
+const IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const INSTALLED = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+/* Returns a message for the user: alerts on, or what to do next. */
+async function enablePush() {
+  if (!API) return "Alerts work in the live app";
+  if (IOS && !INSTALLED) return "On iPhone, first tap Share → Add to Home Screen, open Sift from the home screen, then turn alerts on";
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return "This browser can't show alerts";
+  try {
+    const { key } = await (await fetch("/api/push/key")).json(); if (!key) return "Alerts aren't set up on this server yet";
+    if (await Notification.requestPermission() !== "granted") return "Allow notifications for Sift in your settings to get alerts";
+    const reg = await navigator.serviceWorker.register("/sw.js"); await navigator.serviceWorker.ready;
+    const raw = atob(key.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - key.length % 4) % 4));
+    const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: Uint8Array.from(raw, c => c.charCodeAt(0)) });
+    await api(U("/push"), { method: "POST", body: JSON.stringify(sub.toJSON()) });
+    return "Alerts are on for this device";
+  } catch (e) { return "Couldn't turn on alerts on this device"; }
+}
+
+/* ---------- coach marks (first visit) ---------- */
+function coach() {
+  if (P.coached) return;
+  const el = document.createElement("div"); el.className = "coach";
+  el.innerHTML = '<div><h3>Your briefing is a deck</h3><div class="coach-grid">' +
+    '<div><b>→</b>Swipe right: got it, next</div><div><b>←</b>Swipe left: not for me</div>' +
+    '<div><b>Tap</b>Flip for the full explainer</div><div><b>Tap ×2</b>Save for later</div></div>' +
+    '<button class="btn" id="coachOk">Start</button></div>';
+  view.appendChild(el);
+  el.querySelector("#coachOk").onclick = () => { P.coached = true; persist(); el.remove(); const c = view.querySelector('.card[data-depth="0"]'); if (c) c.focus(); };
+}
+
+/* ---------- sheet ---------- */
+const sheet = document.getElementById("sheet"), scrim = document.getElementById("scrim");
+let lastFocus = null;
+function openSheet(title, html, onMount) {
+  lastFocus = document.activeElement;
+  document.getElementById("sheetTitle").textContent = title;
+  const body = document.getElementById("sheetBody"); body.innerHTML = html; body.scrollTop = 0;
+  sheet.classList.add("open"); scrim.classList.add("open");
+  if (onMount) onMount(body);
+  document.getElementById("sheetClose").focus();
+}
+function closeSheet() { sheet.classList.remove("open"); scrim.classList.remove("open"); if (lastFocus) lastFocus.focus(); }
+scrim.onclick = closeSheet; document.getElementById("sheetClose").onclick = closeSheet;
+document.addEventListener("keydown", e => { if (e.key === "Escape" && sheet.classList.contains("open")) closeSheet(); });
+
+/* ---------- toast ---------- */
+let toastT;
+function toast(msg, undo) {
+  const t = document.getElementById("toast"), u = document.getElementById("toastUndo");
+  document.getElementById("toastMsg").textContent = msg;
+  u.hidden = !undo; u.onclick = () => { undo(); t.classList.remove("show"); };
+  t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 4200);
+}
+
+/* ---------- explain sheet ---------- */
+const KIND = { confirmed: "Confirmed", official: "Official", reported: "Reported", allegation: "Allegation", analysis: "Analysis", uncertain: "Unclear" };
+function explain(s) {
+  const e = s.explainer || {}, refDay = new Date(B.generated_at);
+  const sec = (k, v, note) => v ? '<div class="sec"><h4>' + k + '</h4><p>' + esc(v) + '</p>' + (note ? '<p class="note">' + note + '</p>' : "") + '</div>' : "";
+  const claims = s.claims.length ? '<div class="sec"><h4>What is confirmed, and what is not</h4><ul class="claims">' + s.claims.map(c =>
+    '<li><span class="kind k-' + c.kind + '">' + (KIND[c.kind] || c.kind) + '</span><span>' + esc(c.text) + (c.source ? '<span class="src">' + esc(c.source) + '</span>' : "") + '</span></li>').join("") + '</ul></div>' : "";
+  const tl = s.timeline.length ? '<div class="sec"><h4>Timeline</h4><ol class="tl">' + s.timeline.map(t => {
+    const future = new Date(t.at) > refDay;
+    return '<li class="' + (future ? "future" : "") + '"><time>' + esc(when(t.at + "T06:00:00Z", "day")) + (future ? " · scheduled" : "") + '</time>' + esc(t.text) + (t.source ? ' <span class="src">— ' + esc(t.source) + '</span>' : "") + '</li>';
+  }).join("") + '</ol></div>' : "";
+  openSheet(s.headline,
+    sec("What happened", e.what || s.summary) + sec("Why it matters", e.why || s.why) + sec("What happened before", e.before) +
+    sec("Who is affected", e.who) + sec("What could happen next", e.next, "Scheduled events and reported plans only. We do not make predictions.") +
+    claims + tl +
+    '<div class="sec"><h4>How this summary was made</h4><p class="note" style="margin:0">Written from ' + s.sources.length + ' reports by ' + s.independent_sources +
+    ' independent newsrooms' + (s.analysis.length ? ", with " + s.analysis.length + " opinion or analysis piece" + (s.analysis.length > 1 ? "s" : "") + " shown separately" : "") +
+    '. Every number in the summary was checked against the sources before publishing.</p></div>');
+}
+
+/* ---------- more / feedback sheet ---------- */
+const FB = [["relevant", "Relevant"], ["not_relevant", "Not relevant"], ["too_repetitive", "Too repetitive"], ["too_trivial", "Too trivial"], ["more_like_this", "More like this"]];
+function more(r) {
+  const s = r.s, w = B.weights;
+  const bars = Object.keys(r.parts).map(k => '<div class="bar"><span>' + k.charAt(0).toUpperCase() + k.slice(1) + ' <span class="w">×' + Math.round(w[k] * 100) + '%</span></span><span class="track"><span class="fill" style="width:' + r.parts[k] + '%"></span></span><span class="v">' + Math.round(r.parts[k]) + '</span></div>').join("");
+  const reasons = (s.signals.importance && s.signals.importance.reasons || []).concat(r.why);
+  const pubs = [...new Set(s.sources.map(a => a.publisher))];
+  openSheet("Tune this story",
+    '<div class="sec"><h4>Why you are seeing this</h4><div class="total">' + Math.round(r.score) + '<small>/ 100 · ' + (r.slot === "global" ? "Must-know development" : "Picked for your interests") + '</small></div>' +
+      '<div class="bars" style="margin-top:12px">' + bars + '</div><ul class="reasons">' + reasons.map(x => "<li>" + esc(x) + "</li>").join("") + '</ul></div>' +
+    '<div class="sec"><h4>Was this useful?</h4><div class="chips">' + FB.map(f => '<button class="chip" data-fb="' + f[0] + '">' + f[1] + '</button>').join("") + '</div>' +
+      '<p class="note">Feedback shifts your feed gradually and fades over a couple of weeks. You can undo any tap.</p></div>' +
+    '<div class="sec">' +
+      '<button class="rowbtn" data-m="follow">' + I.follow + 'Follow a topic from this story</button>' +
+      '<button class="rowbtn" data-m="hidetopic">' + I.hide + 'Hide this topic</button>' +
+      '<button class="rowbtn" data-m="similar">' + I.hide + 'Hide similar stories</button>' +
+      pubs.slice(0, 3).map(p => '<button class="rowbtn" data-m="source" data-p="' + esc(p) + '">' + I.src + 'See more from ' + esc(p) + '</button>').join("") +
+      '<button class="rowbtn" data-m="hidesource">' + I.hide + 'Hide stories only from ' + esc(pubs[0]) + '</button>' +
+      '<button class="rowbtn" data-m="report">' + I.flag + 'Report an issue</button>' +
+    '</div>', body => {
+      body.querySelectorAll("[data-fb]").forEach(b => b.onclick = () => feedback(s, b.dataset.fb));
+      body.querySelectorAll("[data-m]").forEach(b => b.onclick = () => moreAction(s, b.dataset.m, b.dataset.p));
+    });
+}
+function feedback(s, kind) {
+  const ev = { id: s.id, kind, topics: s.topics, at: Date.now() };
+  P.feedback.push(ev); persist(); api(U("/feedback"), { method: "POST", body: JSON.stringify({ story_id: s.id, kind }) });
+  closeSheet(); render();
+  toast("Thanks — noted", () => { P.feedback = P.feedback.filter(f => f !== ev); persist(); api(U("/feedback/" + s.id), { method: "DELETE" }); render(); });
+}
+function pickTopic(s, title, cb) {
+  openSheet(title, '<div class="sec"><div class="chips">' + s.topics.map(t => '<button class="chip" data-t="' + t + '">' + esc(tname(t)) + '</button>').join("") + '</div></div>',
+    body => body.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { closeSheet(); cb(b.dataset.t); }));
+}
+function moreAction(s, m, pub) {
+  if (m === "follow") return pickTopic(s, "Follow which topic?", t => { P.followed = [...new Set(P.followed.concat(t))]; persist(); render(); toast("Following " + tname(t), () => { P.followed = P.followed.filter(x => x !== t); persist(); render(); }); });
+  if (m === "hidetopic") return pickTopic(s, "Hide which topic?", t => { P.excluded = [...new Set(P.excluded.concat(t))]; persist(); render(); toast("Hiding " + tname(t) + " from For you", () => { P.excluded = P.excluded.filter(x => x !== t); persist(); render(); }); });
+  closeSheet();
+  if (m === "similar") { P.hiddenStories.push(s.id); const ev = { id: s.id, kind: "not_relevant", topics: s.topics, at: Date.now() }; P.feedback.push(ev); persist(); render();
+    return toast("Hidden. Similar stories will rank lower", () => { P.hiddenStories = P.hiddenStories.filter(x => x !== s.id); P.feedback = P.feedback.filter(f => f !== ev); persist(); render(); }); }
+  if (m === "source") { filter = pub; return render(); }
+  if (m === "hidesource") { const id = s.sources[0].source_id; P.hiddenSources.push(id); persist(); render();
+    return toast("Hiding stories reported only by " + s.sources[0].publisher, () => { P.hiddenSources = P.hiddenSources.filter(x => x !== id); persist(); render(); }); }
+  if (m === "report") return report(s);
+}
+function report(s) {
+  const reasons = ["Factual error", "Misleading headline", "Wrong or missing source", "Outdated", "Something else"];
+  openSheet("Report an issue",
+    '<form id="rep"><div class="sec"><p style="font-size:14px;color:var(--muted);margin-bottom:8px">' + esc(s.headline) + '</p>' +
+    reasons.map((x, i) => '<label class="radio"><input type="radio" name="r" id="rr' + i + '" value="' + x + '"' + (i ? "" : " checked") + '>' + x + '</label>').join("") +
+    '<label for="repText" class="note" style="display:block;margin:10px 0 6px">Details (optional)</label><textarea id="repText"></textarea></div>' +
+    '<button class="btn" type="submit">Send report</button></form>', body => {
+      body.querySelector("#rep").onsubmit = e => {
+        e.preventDefault();
+        const reason = body.querySelector("input[name=r]:checked").value + (body.querySelector("#repText").value ? ": " + body.querySelector("#repText").value : "");
+        P.reports.push({ id: s.id, reason, at: Date.now() }); persist();
+        api("/api/story/" + s.id + "/report", { method: "POST", body: JSON.stringify({ reason }) });
+        closeSheet(); toast(API ? "Report sent to the editors" : "Report saved on this device");
+      };
+    });
+}
+
+/* ---------- filtered-out sheet ---------- */
+function filtered() {
+  const st = B.stats, by = {};
+  B.rejected.forEach(r => (by[r.stage] = by[r.stage] || []).push(r));
+  const names = { source: "Failed source checks", freshness: "Old or recycled", quality: "Too trivial or poorly sourced", cluster: "No factual reporting" };
+  openSheet("What we filtered out",
+    '<p class="lede">We read <b>' + st.articles_scanned + '</b> reports from approved and unapproved sources, grouped overlapping coverage into <b>' + st.stories_formed +
+    '</b> distinct events, and kept <b>' + st.stories_kept + '</b>. Everything set aside is listed here with the reason, so you can check our judgement.</p>' +
+    Object.keys(by).map(k => '<div class="stagehead">' + (names[k] || k) + ' · ' + by[k].length + '</div><ul class="rej">' + by[k].map(r =>
+      '<li><a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.title) + '</a> <span class="pub">· ' + esc(r.publisher) + '</span><span class="r">' + esc(r.reason) + '</span></li>').join("") + '</ul>').join(""));
+}
+
+/* ---------- daily briefings ---------- */
+const SLOT_LABEL = { morning: "Morning brief", afternoon: "Afternoon update", evening: "Evening wrap", extra: "Extra briefing" };
+const fmt12 = t => { const [h, m] = t.split(":").map(Number); return ((h + 11) % 12 + 1) + ":" + String(m).padStart(2, "0") + (h < 12 ? " am" : " pm"); };
+function briefProblems(list, channel, email) {
+  const on = list.filter(d => d.on !== false).map(d => d.time);
+  const p = [];
+  if (on.some(t => !/^([01]\d|2[0-3]):[0-5]\d$/.test(t))) p.push("Pick a time for every briefing.");
+  if (new Set(on).size !== on.length) p.push("Two briefings are set for the same time.");
+  if (channel !== "push" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email || "")) p.push("Enter a valid email address for email briefings.");
+  return p;
+}
+function nextBriefing(list) {
+  const now = new Date(B.generated_at), ist = new Date(now.toLocaleString("en-US", IST)), nowM = ist.getHours() * 60 + ist.getMinutes();
+  const on = list.filter(d => d.on !== false && d.time).map(d => ({ d, m: +d.time.slice(0, 2) * 60 + +d.time.slice(3) })).sort((a, b) => a.m - b.m);
+  return (on.find(x => x.m > nowM) || on[0] || {}).d;
+}
+function briefPreview(list, channel) {
+  const d = nextBriefing(list);
+  if (!d) return '<p class="note" style="margin:0">All briefings are off. You will still get breaking alerts if they are on.</p>';
+  const top = scored().slice(0, 3);
+  const title = (d.slot === "extra" ? (d.name || "Your briefing") : SLOT_LABEL[d.slot]) + " · " + top.length + " things to know";
+  const lines = top.map(r => "• " + esc(r.s.headline)).join("<br>");
+  const via = channel === "email" ? "by email" : channel === "both" ? "as a notification and by email" : "as a notification";
+  return '<div class="notif"><div class="nhead"><b>Sift</b><span>' + fmt12(d.time) + '</span></div><div class="ntitle">' + esc(title) + '</div><div class="nbody">' + lines + '</div></div>' +
+    '<p class="note" style="margin:8px 0 0">Your next briefing, sent ' + via + '. If nothing new clears the bar, we skip it.</p>';
+}
+function briefHTML() {
+  const named = ["morning", "afternoon", "evening"].map(sl => P.digests.find(d => d.slot === sl));
+  const extras = P.digests.filter(d => d.slot === "extra");
+  const row = (d, i) => '<div class="brow"><label class="sw"><input type="checkbox" data-bon="' + i + '"' + (d.on !== false ? " checked" : "") + '><span></span></label>' +
+    '<label for="bt' + i + '" class="blab">' + (d.slot === "extra" ? "Extra time" : SLOT_LABEL[d.slot]) + '</label>' +
+    '<input type="time" id="bt' + i + '" data-bt="' + i + '" value="' + esc(d.time) + '">' +
+    (d.slot === "extra" ? '<button class="icon-btn" data-brm="' + i + '" aria-label="Remove this time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' : '<span style="width:34px"></span>') + '</div>';
+  const all = named.concat(extras);
+  return '<div class="sec" id="briefings"><h4>Daily briefings</h4>' +
+    '<p class="note" style="margin:0 0 8px">One notification with the top stories since your last briefing. Set the times that suit you.</p>' +
+    all.map(d => row(d, P.digests.indexOf(d))).join("") +
+    (extras.length < 2 ? '<button class="linkbtn" id="bAdd" style="margin-top:10px">+ Add another time (' + (2 - extras.length) + ' left)</button>' : '<p class="note">You have added the maximum of 2 extra times.</p>') +
+    '<h4 style="margin-top:16px">Send briefings by</h4><div class="seg" id="bCh">' +
+      [["push", "Notification"], ["email", "Email"], ["both", "Both"]].map(c => '<button data-ch="' + c[0] + '" aria-pressed="' + (P.digestChannel === c[0]) + '">' + c[1] + '</button>').join("") + '</div>' +
+    '<div id="bMail"' + (P.digestChannel === "push" ? " hidden" : "") + ' style="margin-top:10px"><label for="bEmail" class="note" style="display:block;margin:0 0 6px">Email address</label>' +
+      '<input type="email" id="bEmail" autocomplete="email" placeholder="you@example.com" value="' + esc(P.email || "") + '" class="tin"><p class="note">Every email has a one-click unsubscribe link.</p></div>' +
+    '<h4 style="margin-top:16px">Preview</h4><div id="bPrev">' + briefPreview(P.digests, P.digestChannel) + '</div></div>';
+}
+function bindBrief(body, rerender) {
+  const refresh = () => { body.querySelector("#bPrev").innerHTML = briefPreview(P.digests, P.digestChannel); };
+  body.querySelectorAll("[data-bon]").forEach(c => c.onchange = () => { P.digests[+c.dataset.bon].on = c.checked; refresh(); });
+  body.querySelectorAll("[data-bt]").forEach(t => t.onchange = () => { P.digests[+t.dataset.bt].time = t.value; refresh(); });
+  body.querySelectorAll("[data-brm]").forEach(b => b.onclick = () => { P.digests.splice(+b.dataset.brm, 1); rerender(); });
+  const add = body.querySelector("#bAdd");
+  if (add) add.onclick = () => {
+    const used = new Set(P.digests.map(d => d.time));
+    const t = ["10:30", "16:00", "21:30", "12:00", "17:30"].find(x => !used.has(x)) || "11:00";
+    P.digests.push({ slot: "extra", time: t, on: true }); rerender();
+  };
+  body.querySelectorAll("[data-ch]").forEach(b => b.onclick = () => {
+    P.digestChannel = b.dataset.ch; body.querySelectorAll("[data-ch]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    body.querySelector("#bMail").hidden = P.digestChannel === "push"; refresh();
+  });
+  const em = body.querySelector("#bEmail"); em.oninput = () => { P.email = em.value.trim(); };
+}
+
+/* ---------- preferences / onboarding ---------- */
+const REGIONS = ["India", "World", "US", "Asia", "Middle East", "Europe", "Africa"];
+const EXCLUDABLE = ["conflict", "politics", "courts", "markets", "startups", "health", "climate", "oil", "us"];
+function prefs(first) {
+  const ints = Object.keys(B.interests);
+  const chip = (v, on, cls, attr) => '<button class="chip ' + (cls || "") + '" ' + attr + '="' + esc(v) + '" aria-pressed="' + on + '">' + esc(attr === "data-x" ? tname(v) : v) + '</button>';
+  openSheet(first ? "What should Sift watch for you?" : "Your preferences",
+    (first ? '<p class="lede">Pick what you care about. Tap again to make it a priority (★). Major world events still reach you either way. You can set briefing times later in preferences.</p>' : "") +
+    '<div class="sec"><h4>Interests · tap twice for priority</h4><div class="chips" id="pI">' +
+      ints.map(i => chip(i, P.interests.includes(i), P.priority.includes(i) ? "prio" : "", "data-i")).join("") + '</div></div>' +
+    '<div class="sec"><h4>Regions</h4><div class="chips" id="pR">' + REGIONS.map(r => chip(r, P.regions.includes(r), "", "data-r")).join("") + '</div></div>' +
+    '<div class="sec"><h4>Never show me (optional)</h4><div class="chips" id="pX">' + EXCLUDABLE.concat(P.excluded.filter(x => !EXCLUDABLE.includes(x))).map(x => chip(x, P.excluded.includes(x), "neg", "data-x")).join("") + '</div>' +
+      '<p class="note">Hidden from For you. Must-know events still appear under Important.</p></div>' +
+    (first ? "" : briefHTML()) +
+    '<div class="sec"><h4>Breaking alerts</h4><div class="seg" id="pA">' + [["off", "Off"], ["major", "Major only"], ["all", "All breaking"]].map(a => '<button data-a="' + a[0] + '" aria-pressed="' + (P.alerts === a[0]) + '">' + a[1] + '</button>').join("") + '</div>' +
+      '<p class="note">“Major only”: at most 3 a day, only for confirmed, high-importance breaking events. “All breaking”: at most 6. ' + (API ? "" : "This snapshot only stores your choice; alerts need the live server.") + '</p></div>' +
+    '<div class="sec"><h4>Balance</h4><label for="pB" class="note" style="display:block;margin:0 0 6px">Share of For you picked from your interests; the rest is reserved for major developments.</label>' +
+      '<input type="range" id="pB" min="50" max="90" step="5" value="' + Math.round(P.personal * 100) + '"><div class="rangevals"><span>More global</span><span id="pBv">' + Math.round(P.personal * 100) + '% personal</span><span>More personal</span></div></div>' +
+    (!first && (P.followed.length || P.hiddenSources.length || P.feedback.length) ? '<div class="sec"><h4>Learned from you</h4><p class="note" style="margin:0">' +
+      (P.followed.length ? "Following: " + P.followed.map(tname).join(", ") + ". " : "") + (P.hiddenSources.length ? P.hiddenSources.length + " hidden source(s). " : "") +
+      P.feedback.length + ' feedback tap(s).</p><button class="btn ghost" id="pReset" style="margin-top:10px">Reset learned preferences</button></div>' : "") +
+    '<div class="sec"><button class="btn" id="pDone">' + (first ? "Start reading" : "Done") + '</button></div>', body => {
+      if (!first) bindBrief(body, () => { const y = body.scrollTop; prefs(false); document.getElementById("sheetBody").scrollTop = y; });
+      body.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
+        const i = b.dataset.i, on = P.interests.includes(i), pr = P.priority.includes(i);
+        if (!on) { P.interests.push(i); } else if (!pr) { P.priority.push(i); } else { P.interests = P.interests.filter(x => x !== i); P.priority = P.priority.filter(x => x !== i); }
+        b.setAttribute("aria-pressed", String(P.interests.includes(i))); b.classList.toggle("prio", P.priority.includes(i));
+      });
+      const tog = (sel, key) => body.querySelectorAll(sel).forEach(b => b.onclick = () => {
+        const v = b.dataset[sel.slice(6, 7)], has = P[key].includes(v);
+        P[key] = has ? P[key].filter(x => x !== v) : P[key].concat(v); b.setAttribute("aria-pressed", String(!has));
+      });
+      tog("[data-r]", "regions"); tog("[data-x]", "excluded");
+      body.querySelectorAll("[data-a]").forEach(b => b.onclick = async () => {
+        P.alerts = b.dataset.a; body.querySelectorAll("[data-a]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+        if (P.alerts !== "off" && API) toast(await enablePush());
+      });
+      const rng = body.querySelector("#pB"); rng.oninput = () => { P.personal = rng.value / 100; body.querySelector("#pBv").textContent = rng.value + "% personal"; };
+      const rs = body.querySelector("#pReset"); if (rs) rs.onclick = () => { P.followed = []; P.hiddenSources = []; P.hiddenStories = []; P.feedback = []; persist(); closeSheet(); render(); toast("Learned preferences cleared"); };
+      body.querySelector("#pDone").onclick = () => {
+        const bp = briefProblems(P.digests, P.digestChannel, P.email);
+        if (bp.length) { toast(bp[0]); const bs = body.querySelector("#briefings"); if (bs) bs.scrollIntoView({ block: "start" }); return; }
+        P.onboarded = true; persist(); closeSheet(); tab = "feed"; filter = null; deck.key = ""; render(); if (first) coach();
+        api(U("/preferences"), { method: "PUT", body: JSON.stringify({ interests: P.interests, priority_interests: P.priority, excluded_topics: P.excluded, regions: P.regions, breaking_alerts: P.alerts, personal_share: P.personal,
+          digests: P.digests, digest_channel: P.digestChannel, email: P.digestChannel === "push" ? null : P.email,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata" }) })
+          .then(r => r && r.json()).then(j => {
+            if (!j) return;
+            if (j.email_status === "confirmation_sent") toast("Check your inbox: tap the link we sent to start email briefings");
+            else if (j.email_status === "email_not_configured") toast("Email briefings aren't set up on this server yet");
+          }).catch(() => {});
+      };
+    });
+}
+
+/* ---------- events ---------- */
+view.addEventListener("click", e => {
+  const open = e.target.closest("[data-open]"); if (open) return prefs(false);
+  const c = e.target.closest("[data-c]");
+  if (c) {
+    const r = deck.rows[deck.i];
+    if (c.dataset.c === "back") return goBack();
+    if (c.dataset.c === "share") return share(r.s);
+    if (c.dataset.c === "more") return more(r);
+    if (c.dataset.c === "save") {
+      const on = !P.saved.includes(r.s.id);
+      P.saved = on ? P.saved.concat(r.s.id) : P.saved.filter(x => x !== r.s.id); persist();
+      api(U("/saved/" + r.s.id + "?saved=" + on), { method: "PUT" });
+      c.classList.toggle("on", on); c.innerHTML = (on ? I.saved : I.save) + "<span>" + (on ? "Saved" : "Save") + "</span>"; c.setAttribute("aria-pressed", String(on));
+      document.getElementById("nSaved").textContent = P.saved.length || "";
+      return toast(on ? "Saved for later" : "Removed from saved");
+    }
+  }
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const card = b.closest(".card"), r = findRow(card.dataset.id), s = r.s;
+  const act = b.dataset.act;
+  if (act === "sources") { const ul = card.querySelector(".srclist"); ul.hidden = !ul.hidden; b.setAttribute("aria-expanded", String(!ul.hidden)); }
+  if (act === "explain") explain(s);
+  if (act === "more") more(r);
+  if (act === "save") {
+    const on = !P.saved.includes(s.id);
+    P.saved = on ? P.saved.concat(s.id) : P.saved.filter(x => x !== s.id); persist();
+    api(U("/saved/" + s.id + "?saved=" + on), { method: "PUT" });
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); b.innerHTML = (on ? I.saved : I.save) + "<span>" + (on ? "Saved" : "Save") + "</span>";
+    document.getElementById("nSaved").textContent = P.saved.length || "";
+    toast(on ? "Saved" : "Removed from saved");
+  }
+  if (act === "share") share(s);
+});
+document.addEventListener("keydown", e => {
+  if (sheet.classList.contains("open") || document.querySelector(".stories") || listMode) return;
+  if (e.target.closest && e.target.closest("input,textarea")) return;
+  const top = view.querySelector('.card[data-depth="0"]');
+  if (e.key === "ArrowRight" && top) { e.preventDefault(); swipe("yes"); }
+  else if (e.key === "ArrowLeft" && top) { e.preventDefault(); swipe("no"); }
+  else if ((e.key === " " || e.key === "Enter") && top && e.target === top) { e.preventDefault(); flip(top); }
+  else if (e.key.toLowerCase() === "s" && top) { doubleTap(top); }
+  else if (e.key.toLowerCase() === "z" || e.key === "Backspace") goBack();
+});
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => { tab = t.dataset.tab; filter = null; render(); });
+document.getElementById("catchBtn").onclick = showCatchUp;
+document.getElementById("prefsBtn").onclick = () => prefs(false);
+document.getElementById("meter").onclick = filtered;
+document.getElementById("themeBtn").onclick = () => {
+  const dark = getComputedStyle(document.documentElement).colorScheme.includes("dark");
+  P.theme = dark ? "light" : "dark"; document.documentElement.dataset.theme = P.theme; persist();
+};
+document.getElementById("viewBtn").onclick = () => { listMode = !listMode; document.getElementById("viewBtn").innerHTML = listMode ? IC.cards : IC.list; render(); };
+
+/* ---------- boot ---------- */
+function countUp(el, to, ms) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = to; return; }
+  const t0 = performance.now();
+  const step = now => { const p = Math.min(1, (now - t0) / ms); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); };
+  el.textContent = to; requestAnimationFrame(step);
+}
+function masthead() {
+  const g = new Date(B.generated_at);
+  document.getElementById("dateline").textContent = g.toLocaleDateString("en-IN", Object.assign({ day: "numeric", month: "short" }, IST)) +
+    " · " + g.toLocaleTimeString("en-IN", Object.assign({ hour: "2-digit", minute: "2-digit", hour12: false }, IST)) + " IST";
+  const st = B.stats;
+  document.getElementById("meterLine").innerHTML = '<span><strong id="m1">' + st.articles_scanned + '</strong> reports read</span><span class="arrow">→</span><span><strong id="m2">' + st.stories_formed +
+    '</strong> events</span><span class="arrow">→</span><span class="kept"><strong class="kept" id="m3">' + st.stories_kept + '</strong> worth your time</span>';
+  countUp(document.getElementById("m1"), st.articles_scanned, 900); countUp(document.getElementById("m2"), st.stories_formed, 1100); countUp(document.getElementById("m3"), st.stories_kept, 1300);
+  const bar = document.getElementById("meterBar");
+  bar.innerHTML = '<span style="flex:' + (st.articles_scanned - st.stories_formed) + ';background:var(--rule)"></span><span style="flex:' + (st.stories_formed - st.stories_kept) +
+    ';background:color-mix(in srgb, var(--accent) 30%, var(--rule))"></span><span style="flex:' + st.stories_kept + ';background:var(--accent)"></span>';
+  if (!API) { const n = document.getElementById("snapnote"); n.hidden = false; n.textContent = "Snapshot of real reports · " + when(B.generated_at) + " · all cards link to sources"; }
+}
+if (API && "serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+(async function boot() {
+  if (P.theme) document.documentElement.dataset.theme = P.theme;
+  try { B = SNAP || await (await fetch("/api/bundle")).json(); }
+  catch (e) { view.innerHTML = '<div class="end"><b>Could not load the news.</b>Check your connection and reload the page.</div>'; return; }
+  masthead(); render(); liveUpdates();
+  const shared = openSharedStory();
+  if (location.hash === "#briefings" && P.onboarded) { prefs(false); setTimeout(() => { const b = document.getElementById("briefings"); if (b) b.scrollIntoView(); }, 300); }
+  if (!P.onboarded && !shared) setTimeout(() => prefs(true), 350); else if (!shared) coach();
+})();
+</script>
+</body>
+</html>
