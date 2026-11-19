@@ -482,3 +482,28 @@ def test_health_explains_feeds_whose_items_have_no_readable_date(monkeypatch):
     assert rep["items"] == 2 and rep["dated_items"] == 0
     assert rep["undated_sample"]["raw_dates"]["published"] == "not-a-date"
     assert {"title", "link"} <= set(rep["undated_sample"]["fields"])
+
+
+def test_zone_less_dates_use_the_publishers_own_time_zone(monkeypatch):
+    """RBI prints 'Thu, 20 Nov 2025 19:05:00' with no zone: read it as India time (13:35 UTC).
+    The same date from a source with no recorded zone, or one that lands in the future, is dropped."""
+    import httpx
+    from datetime import datetime, timezone
+    from newsintel import ingestion
+    from newsintel.ingestion import RSSAdapter
+
+    def feed(*dates):
+        items = "".join(f"<item><title>Release {i}</title><link>https://www.rbi.org.in/x?prid={i}</link>"
+                        f"<pubDate>{d}</pubDate></item>" for i, d in enumerate(dates))
+        return f'<?xml version="1.0"?><rss version="2.0"><channel><title>T</title>{items}</channel></rss>'.encode()
+
+    def run(source_id, xml):
+        src = ingestion.registry().get(source_id)
+        monkeypatch.setattr(ingestion, "registry", lambda: type("R", (), {"feeds": lambda self: [(src, "https://www.rbi.org.in/f.xml")]})())
+        monkeypatch.setattr(httpx, "get", lambda *a, **k: httpx.Response(200, content=xml, request=httpx.Request("GET", a[0])))
+        return list(RSSAdapter().fetch())
+
+    got = run("rbi", feed("Thu, 20 Nov 2025 19:05:00", "Fri, 20 Nov 2099 10:00:00"))
+    assert [a.published for a in got] == [datetime(2025, 11, 20, 13, 35, tzinfo=timezone.utc)]   # future one dropped
+    monkeypatch.undo()
+    assert run("bbc", feed("Thu, 20 Nov 2025 19:05:00")) == []   # no recorded zone: never guessed

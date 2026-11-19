@@ -22,6 +22,7 @@ class Source:
     syndication_domains: list[str] = field(default_factory=list)
     subjects: list[str] = field(default_factory=list)
     feeds: list[str] = field(default_factory=list)
+    timezone: str | None = None   # IANA zone for feeds that print local times with no zone (e.g. RBI)
 
     def owns_url(self, url: str) -> bool:
         host = urlparse(url).hostname or ""

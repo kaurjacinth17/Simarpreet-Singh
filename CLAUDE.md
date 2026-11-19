@@ -21,7 +21,7 @@ brief is summarised in README.md; the full spec is the owner's "Build an AI-Powe
   plus users (prefs/feedback), notify (breaking alerts), digest (scheduled briefings + email), realtime (refresh loop, SSE, push), db, api
 - `web/app.template.html` the whole client (vanilla JS); `scripts/build_snapshot.py` builds web/index.html and dist/
 - `fixtures/` a real 19 Nov 2026 snapshot (51 articles) and reviewed summaries used by tests
-- `tests/` run with `pytest -q` (32 tests). Keep them passing; add tests for new behaviour.
+- `tests/` run with `pytest -q` (34 tests). Keep them passing; add tests for new behaviour.
 
 ## Commands
 - `pip install -r requirements.txt`
@@ -41,8 +41,11 @@ results, absolute share-preview tags with og-card.png, owner-only admin endpoint
 memory (no re-billing every refresh), Dockerfile + railway.json, pinned requirements.
 
 NOT yet done:
-1. Live RSS feeds have never been run from a machine with internet; check /api/health "feeds" after deploying.
-   Only 7 sources have feed URLs; HT, ET, Business Standard, SEBI, PIB ministries still to add and verify.
+1. Deployed on Railway (lovely-radiance, https://simarpreet-singh-production.up.railway.app). /api/health shows
+   per-feed results. Working: BBC, The Hindu, Indian Express, Mint. RBI dates have no zone -> read as IST via
+   sources.json "timezone". PIB feed has no dates (and Hindi titles), so it adds nothing yet. UN News all-news
+   feed was 404; replaced with two regional feeds (unverified until health shows them).
+   HT, ET, Business Standard, SEBI, PIB ministries still to add and verify.
 2. Claude summarisation has never run live (no API key yet).
 3. Not deployed yet; push and email have only been tested against local stand-ins, not real devices or inboxes.
 4. Reuters/AP/FT/Bloomberg need licences.

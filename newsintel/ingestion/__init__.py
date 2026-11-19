@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, Protocol
 
@@ -81,10 +81,13 @@ class RSSAdapter:
                     continue
                 ts = e.get("published_parsed") or e.get("updated_parsed")
                 if ts is None:
-                    precision, published = "unknown", None
+                    precision = "minute"
+                    published = _local_date(e.get("published") or e.get("updated"), source.timezone)
                 else:
                     precision = "minute"
                     published = datetime(*ts[:6], tzinfo=timezone.utc)
+                if published and published > datetime.now(timezone.utc) + timedelta(minutes=10):
+                    published = None  # a date in the future means we misread it: drop rather than guess
                 if published is None:
                     # Stage 1 requires a date; drop rather than guess. Keep a sample of what the feed
                     # did send, so /api/health shows why (e.g. a date format feedparser can't read).
@@ -101,6 +104,24 @@ class RSSAdapter:
                     published=published, time_precision=precision,
                     extract=_strip_html(e.get("summary", "")),
                 )
+
+
+def _local_date(raw: str | None, tz: str | None) -> datetime | None:
+    """Read an RFC 822 date that has no time zone (e.g. RBI's 'Thu, 19 Nov 2026 19:05:00') in the
+    publisher's own zone. Only for sources whose zone is recorded in sources.json; otherwise None."""
+    import re
+    from email.utils import parsedate
+    from zoneinfo import ZoneInfo
+    if not raw or not tz:
+        return None
+    raw = raw.strip()
+    # Only 'Day, DD Mon YYYY HH:MM[:SS]' with nothing after it: a date that names any zone is not ours to reinterpret
+    if not re.fullmatch(r"(?:[A-Za-z]{3},\s*)?\d{1,2}\s+[A-Za-z]{3}\s+\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?", raw):
+        return None
+    parts = parsedate(raw)
+    if parts is None:
+        return None
+    return datetime(*parts[:6], tzinfo=ZoneInfo(tz)).astimezone(timezone.utc)
 
 
 def _strip_html(s: str) -> str:
