@@ -43,8 +43,9 @@ memory (no re-billing every refresh), Dockerfile + railway.json, pinned requirem
 NOT yet done:
 1. Deployed on Railway (lovely-radiance, https://simarpreet-singh-production.up.railway.app). /api/health shows
    per-feed results. Working: BBC, The Hindu, Indian Express, Mint. RBI dates have no zone -> read as IST via
-   sources.json "timezone". PIB feed has no dates (and Hindi titles), so it adds nothing yet. UN News all-news
-   feed was 404; replaced with two regional feeds (unverified until health shows them).
+   sources.json "timezone" (verified live: 10/10 dated). PIB feed has no dates (and Hindi titles), so it adds
+   nothing yet. UN News: all-news and regional feed URLs all 404 (19 Nov 2026); feeds emptied until a working
+   one is verified.
    HT, ET, Business Standard, SEBI, PIB ministries still to add and verify.
 2. Claude summarisation has never run live (no API key yet).
 3. Not deployed yet; push and email have only been tested against local stand-ins, not real devices or inboxes.

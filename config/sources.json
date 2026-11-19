@@ -39,7 +39,7 @@
     {"id": "rbi", "name": "Reserve Bank of India", "tier": 1, "credibility": 97, "kind": "primary", "owner": "rbi", "domains": ["rbi.org.in"], "subjects": ["economy", "markets", "india"], "timezone": "Asia/Kolkata", "feeds": ["https://www.rbi.org.in/pressreleases_rss.xml"]},
     {"id": "sebi", "name": "SEBI", "tier": 1, "credibility": 96, "kind": "primary", "owner": "sebi", "domains": ["sebi.gov.in"], "subjects": ["markets", "india"], "timezone": "Asia/Kolkata", "feeds": []},
     {"id": "who", "name": "World Health Organization", "tier": 1, "credibility": 94, "kind": "primary", "owner": "who", "domains": ["who.int"], "subjects": ["health"], "feeds": []},
-    {"id": "un_news", "name": "UN News", "tier": 1, "credibility": 88, "kind": "primary", "owner": "un", "domains": ["news.un.org"], "subjects": ["world", "climate", "health"], "feeds": ["https://news.un.org/feed/subscribe/en/news/region/africa/feed/rss.xml", "https://news.un.org/feed/subscribe/en/news/region/middle-east/feed/rss.xml"]},
+    {"id": "un_news", "name": "UN News", "tier": 1, "credibility": 88, "kind": "primary", "owner": "un", "domains": ["news.un.org"], "subjects": ["world", "climate", "health"], "feeds": []},
     {"id": "nasa", "name": "NASA", "tier": 1, "credibility": 95, "kind": "primary", "owner": "nasa", "domains": ["nasa.gov"], "subjects": ["science"], "feeds": []},
     {"id": "isro", "name": "ISRO", "tier": 1, "credibility": 95, "kind": "primary", "owner": "isro", "domains": ["isro.gov.in"], "subjects": ["science"], "feeds": []},
     {"id": "sec", "name": "US SEC filings", "tier": 1, "credibility": 97, "kind": "primary", "owner": "filings", "domains": ["sec.gov"], "subjects": ["business", "markets", "technology", "ai"], "feeds": []},
