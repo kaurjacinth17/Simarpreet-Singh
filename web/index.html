@@ -277,7 +277,13 @@ main.listmode .card { position: relative; inset: auto; min-height: 0; padding: 2
 .chip:hover { border-color: var(--muted); }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
 .chip.prio[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-.chip.prio[aria-pressed="true"]::after { content: " ★"; }
+.ichip { display: inline-flex; align-items: center; gap: 2px; }
+.ichip .star { display: none; width: 30px; height: 30px; border-radius: 999px; font-size: 15px; line-height: 1; color: var(--muted); border: 1px solid var(--rule); }
+.ichip.on .star { display: inline-grid; place-items: center; }
+.ichip .star[aria-pressed="true"] { color: #fff; background: var(--accent); border-color: var(--accent); }
+.pdone { position: sticky; bottom: -26px; background: var(--sheet); padding-top: 10px; padding-bottom: 14px; border-top: 1px solid var(--rule); z-index: 1; }
+.pcount { margin: 0 0 10px; font-size: 14px; color: var(--ink); }
+.because { font: 500 12.5px/1.3 var(--body); color: var(--accent); }
 .chip.neg[aria-pressed="true"] { background: var(--alert-soft); color: var(--alert); border-color: var(--alert); }
 .rowbtn { display: flex; width: 100%; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 15px; text-align: left; }
 .rowbtn:last-child { border-bottom: 0; }
@@ -503,6 +509,21 @@ function yourFeed() {
 function allStories() {
   return scored().sort((a, b) => new Date(b.s.last_updated) - new Date(a.s.last_updated)).map(r => Object.assign({ slot: "all" }, r));
 }
+/* One sentence on what For you shows with the current choices (used live in Preferences and after saving). */
+function feedSummary(long) {
+  const rows = yourFeed(), mine = rows.filter(r => r.slot === "personal").length, must = rows.length - mine;
+  const n = (k, w) => k + " " + w + (k === 1 ? "" : "s");
+  if (!mine) return "Nothing matches your interests right now, so For you shows only " + n(must, "must-know story").replace("storys", "stories") +
+    (long ? ". Everything is under All." : ". See All for everything.");
+  return long ? "For you will show " + n(rows.length, "story").replace("storys", "stories") + ": " + mine + " for your interests" + (must ? ", " + must + " must-know" : "") + "."
+              : "For you: " + n(rows.length, "story").replace("storys", "stories") + ", " + mine + " picked for your interests";
+}
+/* Why a story is in For you, in a few words. */
+function becauseText(r) {
+  if (r.slot === "global") return "Must-know: a major story";
+  const w = (r.why || []).find(x => /^(Priority interest|You follow|A topic you follow)/.test(x));
+  return w || "Matches your interests";
+}
 function important() {
   const all = scored();
   return all.filter(r => r.s.importance >= B.feed_settings.global_importance_floor).sort((a, b) => b.s.importance - a.s.importance).map(r => Object.assign({ slot: "global" }, r));
@@ -598,6 +619,7 @@ function readMinutes(rows) { return Math.max(1, Math.round(rows.reduce((a, r) =>
 function frontHTML(r, i, total) {
   const s = r.s, cat = [s.category, s.subcategory].filter(Boolean).join(" · ");
   return '<div class="kicker"><span class="idx">' + readTime(s) + '</span>' + labelHTML(s) + '</div>' +
+    (tab === "feed" && !filter ? '<div class="because">' + esc(becauseText(r)) + '</div>' : "") +
     '<div class="cat">' + esc(cat) + '</div><h2 class="hl">' + esc(s.headline) + '</h2>' +
     (s.limited ? saidHTML(s) + '<div class="limited"><b>Limited summary.</b> ' + esc(s.limited_reason) + '</div>'
                : '<p class="sum">' + esc(s.summary) + '</p>') +
@@ -681,11 +703,13 @@ function deskItemHTML(r, k, on) {
   return '<button class="ditem' + (on ? " on" : "") + (read ? " seen" : "") + '" data-pick="' + k + '"' + (on ? ' aria-current="true"' : "") + '>' +
     '<span class="dmeta">' + labelHTML(s) + (cat ? '<span>' + esc(cat) + '</span>' : "") + '</span>' +
     '<span class="dh">' + esc(s.headline) + '</span>' +
+    (tab === "feed" && !filter ? '<span class="because">' + esc(becauseText(r)) + '</span>' : "") +
     '<span class="dsub">' + esc(readTime(s)) + ' · ' + esc(pubs.slice(0, 2).join(", ") + (pubs.length > 2 ? " +" + (pubs.length - 2) : "")) + '</span></button>';
 }
 function deskReaderHTML(r) {
   const s = r.s, saved = P.saved.includes(s.id), cat = [s.category, s.subcategory].filter(Boolean).join(" · ");
   return '<div class="dread-in"><div class="kicker"><span class="idx">' + readTime(s) + '</span>' + labelHTML(s) + '</div>' +
+    (tab === "feed" && !filter ? '<div class="because">' + esc(becauseText(r)) + '</div>' : "") +
     (cat ? '<div class="cat">' + esc(cat) + '</div>' : "") + '<h1 class="dhl">' + esc(s.headline) + '</h1>' +
     (s.limited ? saidHTML(s) + '<div class="limited"><b>Limited summary.</b> ' + esc(s.limited_reason) + '</div>'
                : '<p class="sum">' + esc(s.summary) + '</p>') +   /* "Why it matters" follows "What happened" in the explainer below */
@@ -1257,9 +1281,11 @@ function prefs(first) {
   const ints = Object.keys(B.interests);
   const chip = (v, on, cls, attr) => '<button class="chip ' + (cls || "") + '" ' + attr + '="' + esc(v) + '" aria-pressed="' + on + '">' + esc(attr === "data-x" ? tname(v) : v) + '</button>';
   openSheet(first ? "What should Sift watch for you?" : "Your preferences",
-    (first ? '<p class="lede">Pick what you care about. Tap again to make it a priority (★). Major world events still reach you either way. You can set briefing times later in preferences.</p>' : "") +
-    '<div class="sec"><h4>Interests · tap twice for priority</h4><div class="chips" id="pI">' +
-      ints.map(i => chip(i, P.interests.includes(i), P.priority.includes(i) ? "prio" : "", "data-i")).join("") + '</div></div>' +
+    (first ? '<p class="lede">Pick what you care about, and tap ★ on the ones that matter most. Major world events still reach you either way. You can set briefing times later in preferences.</p>' : "") +
+    '<div class="sec"><h4>Interests · tap to choose, ★ for priority</h4><div class="chips" id="pI">' +
+      ints.map(i => { const on = P.interests.includes(i), pr = on && P.priority.includes(i);
+        return '<span class="ichip' + (on ? " on" : "") + '"><button class="chip' + (pr ? " prio" : "") + '" data-i="' + esc(i) + '" aria-pressed="' + on + '">' + esc(i) + '</button>' +
+          '<button class="star" data-star="' + esc(i) + '" aria-pressed="' + pr + '" aria-label="Make ' + esc(i) + ' a priority" title="Priority">★</button></span>'; }).join("") + '</div></div>' +
     '<div class="sec"><h4>Regions</h4><div class="chips" id="pR">' + REGIONS.map(r => chip(r, P.regions.includes(r), "", "data-r")).join("") + '</div></div>' +
     '<div class="sec"><h4>Never show me (optional)</h4><div class="chips" id="pX">' + EXCLUDABLE.concat(P.excluded.filter(x => !EXCLUDABLE.includes(x))).map(x => chip(x, P.excluded.includes(x), "neg", "data-x")).join("") + '</div>' +
       '<p class="note">Hidden from For you. Must-know events still appear under Important.</p></div>' +
@@ -1273,29 +1299,44 @@ function prefs(first) {
       P.feedback.length + ' feedback tap(s).</p><button class="btn ghost" id="pReset" style="margin-top:10px">Reset learned preferences</button></div>' : "") +
     (first ? "" : '<div class="sec"><h4>What we filtered out</h4><p class="note" style="margin:0 0 10px">On the last refresh Sift read ' + B.stats.articles_scanned +
       ' reports and kept ' + B.stats.stories_kept + ' stories. See everything it set aside, and why.</p><button class="btn ghost" id="pFiltered">See what we filtered out</button></div>') +
-    '<div class="sec"><button class="btn" id="pDone">' + (first ? "Start reading" : "Done") + '</button></div>', body => {
+    '<div class="sec pdone"><p class="pcount" id="pCount" aria-live="polite"></p><button class="btn" id="pDone">' + (first ? "Start reading" : "Done") + '</button></div>', body => {
+      const updCount = () => { const el = body.querySelector("#pCount"); if (el) el.textContent = feedSummary(true); };
       const pf = body.querySelector("#pFiltered"); if (pf) pf.onclick = () => filtered();
       if (!first) bindBrief(body, () => { const y = body.scrollTop; prefs(false); document.getElementById("sheetBody").scrollTop = y; });
-      body.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
-        const i = b.dataset.i, on = P.interests.includes(i), pr = P.priority.includes(i);
-        if (!on) { P.interests.push(i); } else if (!pr) { P.priority.push(i); } else { P.interests = P.interests.filter(x => x !== i); P.priority = P.priority.filter(x => x !== i); }
-        b.setAttribute("aria-pressed", String(P.interests.includes(i))); b.classList.toggle("prio", P.priority.includes(i));
+      const paintInterest = i => {
+        const b = body.querySelector('[data-i="' + CSS.escape(i) + '"]'), st = body.querySelector('[data-star="' + CSS.escape(i) + '"]');
+        const on = P.interests.includes(i), pr = on && P.priority.includes(i);
+        b.setAttribute("aria-pressed", String(on)); b.classList.toggle("prio", pr); b.parentNode.classList.toggle("on", on); st.setAttribute("aria-pressed", String(pr));
+      };
+      body.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {   // tap: in or out
+        const i = b.dataset.i;
+        if (P.interests.includes(i)) { P.interests = P.interests.filter(x => x !== i); P.priority = P.priority.filter(x => x !== i); }
+        else P.interests.push(i);
+        paintInterest(i); updCount();
+      });
+      body.querySelectorAll("[data-star]").forEach(b => b.onclick = () => {   // star: priority on or off
+        const i = b.dataset.star; if (!P.interests.includes(i)) return;
+        P.priority = P.priority.includes(i) ? P.priority.filter(x => x !== i) : P.priority.concat(i);
+        paintInterest(i); updCount();
       });
       const tog = (sel, key) => body.querySelectorAll(sel).forEach(b => b.onclick = () => {
         const v = b.dataset[sel.slice(6, 7)], has = P[key].includes(v);
         P[key] = has ? P[key].filter(x => x !== v) : P[key].concat(v); b.setAttribute("aria-pressed", String(!has));
       });
       tog("[data-r]", "regions"); tog("[data-x]", "excluded");
+      body.querySelectorAll("[data-r],[data-x]").forEach(b => b.addEventListener("click", updCount));
+      updCount();
       body.querySelectorAll("[data-a]").forEach(b => b.onclick = async () => {
         P.alerts = b.dataset.a; body.querySelectorAll("[data-a]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
         if (P.alerts !== "off" && API) toast(await enablePush());
       });
-      const rng = body.querySelector("#pB"); rng.oninput = () => { P.personal = rng.value / 100; body.querySelector("#pBv").textContent = rng.value + "% personal"; };
+      const rng = body.querySelector("#pB"); rng.oninput = () => { P.personal = rng.value / 100; body.querySelector("#pBv").textContent = rng.value + "% personal"; updCount(); };
       const rs = body.querySelector("#pReset"); if (rs) rs.onclick = () => { P.followed = []; P.hiddenSources = []; P.hiddenStories = []; P.feedback = []; persist(); closeSheet(); render(); toast("Learned preferences cleared"); };
       body.querySelector("#pDone").onclick = () => {
         const bp = briefProblems(P.digests, P.digestChannel, P.email);
         if (bp.length) { toast(bp[0]); const bs = body.querySelector("#briefings"); if (bs) bs.scrollIntoView({ block: "start" }); return; }
         P.onboarded = true; persist(); closeSheet(); tab = "feed"; filter = null; deck.key = ""; render(); if (first) coach();
+        toast(feedSummary(false));
         api(U("/preferences"), { method: "PUT", body: JSON.stringify({ interests: P.interests, priority_interests: P.priority, excluded_topics: P.excluded, regions: P.regions, breaking_alerts: P.alerts, personal_share: P.personal,
           digests: P.digests, digest_channel: P.digestChannel, email: P.digestChannel === "push" ? null : P.email,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata" }) })
